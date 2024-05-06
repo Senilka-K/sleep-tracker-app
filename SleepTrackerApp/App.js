@@ -7,6 +7,7 @@ import SleepTimeSelector from "./Screens/SleepTime";
 import WakeTimeSelector from "./Screens/WakeUpTime";
 import Buttons from "./Screens/Buttons";
 import SettingsScreen from "./Screens/Personalize";
+import SleepStatisticsScreen from "./Screens/Statics";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 // import { useState } from "react";
@@ -83,6 +84,16 @@ return (
               tabBarLabel: "Personalize",
               tabBarIcon: ({ color }) => (
                 <Ionicons name="person-circle" size={20} color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Statics"
+            component={SleepStatisticsScreen}
+            options={{
+              tabBarLabel: "Statics",
+              tabBarIcon: ({ color }) => (
+                <Ionicons name="stats-chart" size={20} color={color} />
               ),
             }}
           />

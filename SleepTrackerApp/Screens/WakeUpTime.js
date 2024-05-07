@@ -12,6 +12,7 @@ const WakeTimeSelector = ( { navigation } ) => {
 
   const saveWakeUpTime = () => {
     console.log('Wake Up Time saved:', wakeTime.toLocaleTimeString());
+    navigation.navigate('MainTabs')
   };
 
   return (

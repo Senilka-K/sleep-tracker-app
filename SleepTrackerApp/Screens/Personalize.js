@@ -93,44 +93,70 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f9fc',  // A lighter, more neutral background color
   },
   section: {
     marginBottom: 20,
-    padding: 10,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
+    padding: 15,  // Increased padding for better spacing
+    backgroundColor: '#ffffff',
+    borderRadius: 12,  // More pronounced rounded corners
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#dfe1e5',  // Softer border color
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,  // Softer shadow for a subtle depth effect
+    shadowRadius: 10,
+    elevation: 6,
   },
   label: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+    fontSize: 20,  // Slightly larger font for better readability
+    fontWeight: '600',  // Medium-bold weight
+    marginBottom: 12,  // Increased space between label and content
+    color: '#2c3e50',  // Darker color for better readability
   },
   valueText: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 5,
+    fontSize: 18,  // Larger font size for better visibility
+    color: '#34495e',  // A softer, more pleasant color
+    marginBottom: 10,  // More space below the text for clarity
   },
   button: {
-    backgroundColor: '#4CAF50',
-    padding: 10,
+    backgroundColor: '#3498db',  // A fresh, vibrant blue
+    paddingVertical: 14,
+    paddingHorizontal: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
-    marginBottom: 10,
+    borderRadius: 8,  // More rounded corners
+    marginBottom: 15,  // More space below the button
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 20,  // Increased font size for button text
+    fontWeight: 'bold',
   },
   picker: {
     width: '100%',
     backgroundColor: '#fff',
+    borderRadius: 8,  // Rounded corners for the picker as well
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
 });
 
 export default SettingsScreen;
-

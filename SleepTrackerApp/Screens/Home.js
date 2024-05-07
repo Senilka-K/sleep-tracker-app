@@ -13,110 +13,122 @@ import {
   Platform,
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import Buttons from "./Buttons";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function HomeScreen({ navigation }) {
-  const [username, setUsername] = useState("");
-  const [errors, setErrors] = useState({});
-  const [loginSuccess, setLoginSuccess] = useState(false);
-
-  const validateForm = () => {
-    let errors = {};
-    if (!username) {
-      errors.username = "Username is required";
-    }
-    setErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleLogin = () => {
-    if (validateForm()) {
-      setLoginSuccess(true);
-    }
-  };
-
-  return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-      style={styles.container}
-    >
-      <Text style={styles.text}>Welcome</Text>
-      <View style={styles.form}>
-        <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your username"
-          value={username}
-          onChangeText={setUsername}
-        />
-        {errors.username && (
-          <Text style={styles.errorText}>{errors.username}</Text>
+    const [username, setUsername] = useState("");
+    const [errors, setErrors] = useState({});
+    const [loginSuccess, setLoginSuccess] = useState(false);
+  
+    const validateForm = () => {
+      let errors = {};
+      if (!username) {
+        errors.username = "Username is required";
+      }
+      setErrors(errors);
+      return Object.keys(errors).length === 0;
+    };
+  
+    const handleLogin = () => {
+        if (validateForm()) {
+          setLoginSuccess(true);
+          navigation.navigate('Buttons'); // Navigate on successful login
+        }
+      };
+      
+    return (
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        style={styles.container}
+      >
+        <Text style={styles.text}>Welcome</Text>
+        {!loginSuccess ? (
+          <View style={styles.form}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your username"
+              value={username}
+              onChangeText={setUsername}
+            />
+            {errors.username && (
+              <Text style={styles.errorText}>{errors.username}</Text>
+            )}
+            <View style={styles.actionButtonGroup}>
+              <TouchableOpacity style={styles.actionButton} onPress={handleLogin}>
+                <Text style={styles.actionButtonText}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.successText}>
+              {username} logged in successfully!
+            </Text>
+            <Buttons />
+          </View>
         )}
-        <View style={styles.actionButtonGroup}>
-          <TouchableOpacity style={styles.actionButton} onPress={handleLogin}>
-            <Text style={styles.actionButtonText}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {loginSuccess && (
-        <Text style={styles.successText}>
-          {username} logged in successfully!
-        </Text>
-      )}
-      <StatusBar style="auto" />
-    </KeyboardAvoidingView>
-  );
-}
-
+        <StatusBar style="auto" />
+      </KeyboardAvoidingView>
+    );
+  }
+  
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "#ffffff",  // Brighter background for better contrast
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    fontSize: 24,
+    fontSize: 48,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 50,
+    color: "#2F4F4F",  // Dark slate gray for a sophisticated look
   },
   form: {
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     padding: 20,
     width: screenWidth - 70,
     borderRadius: 10,
-    shadowColor: "black",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
     elevation: 5,
   },
   label: {
-    fontSize: 18,
+    fontSize: 24,
     marginBottom: 20,
-    fontWeight: "bold",
+    fontWeight: "600",
     textAlign: "center",
+    color: "#696969",  // Dim gray for labels
   },
   input: {
-    height: 40,
-    borderColor: "#ddd",
+    height: 50, // Increased height for better touch area
+    borderColor: "#708090", // Slate gray border
     borderWidth: 1,
     marginBottom: 15,
-    padding: 10,
-    borderRadius: 5,
+    paddingHorizontal: 15,  // Increased horizontal padding
+    borderRadius: 8,
+    fontSize: 18, // Larger font size
+    textAlign: 'center',
+    backgroundColor: "#F0F8FF", // Alice blue for input background to distinguish area
   },
   errorText: {
-    color: "red",
+    color: "#B22222", // Firebrick red for error messages
     marginBottom: 10,
+    textAlign: 'center',
   },
   successText: {
-    color: "green",
+    color: "#32CD32", // Lime green for success messages
     padding: 20,
   },
   actionButtonGroup: {
@@ -125,14 +137,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   actionButton: {
-    backgroundColor: "grey",
-    padding: 10,
+    backgroundColor: "#4682B4", // Steel blue for button background
+    padding: 12,
     width: screenWidth - 250,
-    alignItems: "center",
-    borderRadius: 5,
+    alignItems: 'center',
+    borderRadius: 8,
   },
   actionButtonText: {
     fontSize: 18,
-    color: "#fff",
+    color: "#ffffff", // White text for better readability
   },
 });
+

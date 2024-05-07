@@ -2,34 +2,35 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const WakeTimeSelector = () => {
+const WakeTimeSelector = ( { navigation } ) => {
   const [wakeTime, setWakeTime] = useState(new Date());
-  const [showWakePicker, setShowWakePicker] = useState(false);
 
   const onChangeWake = (event, selectedDate) => {
     const currentDate = selectedDate || wakeTime;
-    setShowWakePicker(Platform.OS === 'ios');
     setWakeTime(currentDate);
+  };
+
+  const saveWakeUpTime = () => {
+    console.log('Wake Up Time saved:', wakeTime.toLocaleTimeString());
+    navigation.navigate('MainTabs')
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Set Your Wake-Up Alarm!</Text>
-      <TouchableOpacity style={styles.button} onPress={() => setShowWakePicker(true)}>
-        <Text style={styles.buttonText}>Set Wake-Up Time</Text>
+      <View style={styles.pickerContainer}>
+        <DateTimePicker
+          style={styles.datetimepicker}
+          value={wakeTime}
+          mode="time"
+          display="spinner"
+          onChange={onChangeWake}
+          textColor="#fff"
+        />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={saveWakeUpTime}>
+        <Text style={styles.buttonText}>Save Wake-Up Time</Text>
       </TouchableOpacity>
-      {showWakePicker && (
-        <View style={styles.pickerContainer}>
-          <DateTimePicker
-            style={styles.datetimepicker}
-            value={wakeTime}
-            mode="time"
-            display="spinner"
-            onChange={onChangeWake}
-            textColor="#fff"
-          />
-        </View>
-      )}
       <Text style={styles.timeText}>Wake up at: {wakeTime.toLocaleTimeString()}</Text>
     </View>
   );
@@ -48,9 +49,19 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#333',
+    backgroundColor: 'grey',
     borderRadius: 10,
     padding: 20,
+    marginBottom: 80,
+    marginTop: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   label: {
     fontSize: 40,
@@ -60,21 +71,28 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   button: {
-    backgroundColor: 'grey',
+    backgroundColor: '#4CAF50',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
-    marginBottom: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 20,
   },
   timeText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#555',
-    marginTop: 40,
+    marginTop: 20,
   },
   datetimepicker: {
     width: 300,

@@ -45,20 +45,46 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#e8f4f8',  // A light calming blue background
   },
   button: {
-    backgroundColor: '#000',
-    padding: 20,
-    borderRadius: 10,
+    backgroundColor: '#4CAF50',  // Green button background
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 10,  // More pronounced rounded corners
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 7,
+    marginBottom: 20,  // Space between the button and timer text
   },
   buttonText: {
     color: '#fff',
     fontSize: 20,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',  // Stylistic choice for uppercase text
   },
   timerText: {
-    marginTop: 20,
-    fontSize: 16,
+    marginTop: 10,
+    fontSize: 20,  // Larger font for better readability
+    color: '#333',
+    fontWeight: '500',  // Medium weight for the timer text
+    paddingHorizontal: 20,  // Horizontal padding to keep the text centered
+    backgroundColor: '#ffffff',  // Light background for timer text
+    borderRadius: 10,  // Rounded corners for the timer display
+    paddingVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 3.84,
+    elevation: 4,
   },
 });
 

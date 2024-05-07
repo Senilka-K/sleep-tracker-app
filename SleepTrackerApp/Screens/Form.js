@@ -74,7 +74,7 @@ import {
               {errors.age ? (
                 <Text style={styles.errorText}>{errors.age}</Text>
               ) : null}
-              <Text style={styles.label}>Gender</Text>
+              <Text style={styles.label}>Gender:</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Enter your Gender"
@@ -84,7 +84,7 @@ import {
               {errors.gender ? (
                 <Text style={styles.errorText}>{errors.gender}</Text>
               ) : null}
-              <Text style={styles.label}>Occupation</Text>
+              <Text style={styles.label}>Occupation:</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Enter your Occupation"
@@ -102,20 +102,6 @@ import {
                   Submit
                   </Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity
-                  style={styles.actionButton}
-                >
-                  <Text style={styles.actionButtonText}>
-                  Edit
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.actionButton}
-                >
-                  <Text style={styles.actionButtonText}>
-                  Delete
-                  </Text>
-                </TouchableOpacity> */}
               </View>
             </View>
           </View>
@@ -129,19 +115,21 @@ import {
       flexGrow: 1,
       justifyContent: "center",
       alignItems: "center",
+      backgroundColor: "#f5f5f5", // Light grey background for better contrast
     },
     text: {
-      fontSize: 24,
+      fontSize: 30,
       fontWeight: "bold",
       paddingTop: 20,
-      marginBottom: 16,
+      marginBottom: 30,
+      color: "#333", // Darker text color for visibility
     },
     form: {
       backgroundColor: "white",
       padding: 20,
       width: screenWidth - 50,
       borderRadius: 10,
-      shadowColor: "black",
+      shadowColor: "rgba(0, 0, 0, 0.25)", // Slightly transparent shadow
       shadowOffset: {
         width: 0,
         height: 2,
@@ -151,57 +139,41 @@ import {
       elevation: 5,
     },
     label: {
-      fontSize: 16,
+      fontSize: 20,
       marginBottom: 5,
       fontWeight: "bold",
+      color: "#555", // Dark grey label color
     },
     input: {
       height: 40,
       borderColor: "#ddd",
-      borderWidth: 1,
+      borderWidth: 2,
       marginBottom: 15,
       padding: 10,
       borderRadius: 5,
+      fontSize: 18,
+      color: "#333", // Dark text color for input
     },
     errorText: {
       color: "red",
-      marginBottom: 10,
-    },
-    buttonGroup: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      marginBottom: 15,
-    },
-    button: {
-      backgroundColor: "#ddd",
-      padding: 10,
-      width: 100,
-      alignItems: "center",
-      borderRadius: 5,
-    },
-    buttonText: {
-      fontSize: 16,
-      color: "#000",
-    },
-    buttonSelected: {
-      backgroundColor: "#007BFF",
-      color: "#fff",
+      marginBottom: 20,
     },
     actionButtonGroup: {
       flexDirection: "row",
-      justifyContent: "space-between",
+      justifyContent: 'center',
       marginTop: 20,
     },
     actionButton: {
-      backgroundColor: "grey",
+      backgroundColor: "#4682B4", // Blue background color for action button
       padding: 10,
-      width: screenWidth - 300,
+      width: screenWidth - 250,
       alignItems: "center",
       borderRadius: 5,
     },
     actionButtonText: {
-      fontSize: 16,
+      fontSize: 24,
       color: "#fff",
+      fontWeight: "bold", // Bold action button text
     },
   });
 

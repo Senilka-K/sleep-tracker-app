@@ -91,41 +91,55 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff', // Changed to white
+    backgroundColor: '#f0f9ff', // A soothing light blue that's easy on the eyes at night
   },
   header: {
-    fontSize: 40,
+    fontSize: 36, // Slightly smaller for subtlety
     marginBottom: 20,
     textAlign: 'center',
     fontWeight: "bold",
+    color: '#34495e', // A dark blue color for elegance
   },
   dateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 30,
+    justifyContent: 'space-between', // Use space-between to align button to the right
+    marginTop: 20,
+    marginBottom: 20,
+    paddingHorizontal: 10, // Add horizontal padding
   },
   dateDisplay: {
     fontSize: 24,
-    color: '#000', // Changed to black
-    marginRight: 10,
+    color: '#2c3e50', // A deeper shade of blue for contrast
+    flex: 1, // Allow text to take up remaining space
   },
   subtitle: {
-    fontSize: 30,
-    color: '#000', // Changed to black
-    marginTop: 20,
+    fontSize: 26, // Slightly reduced size for a balanced look
+    color: '#2c3e50',
+    marginTop: 10,
     marginBottom: 10,
     textAlign: "center",
-    fontWeight: "bold",
+    fontWeight: "600", // Semi-bold for importance without overpowering
   },
   sleepQuality: {
     fontSize: 20,
-    color: '#000', // Changed to black
-    marginBottom: 40,
+    color: '#16a085', // A teal color to highlight the sleep quality
+    marginBottom: 30,
     textAlign: "center",
   },
   chartContainer: {
     alignItems: 'center',
+    padding: 20, // Add padding to give space around the chart
+    backgroundColor: '#ffffff', // White background to make the chart stand out
+    borderRadius: 10, // Rounded corners for the chart container
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1, // Lighter shadow for subtlety
+    shadowRadius: 8,
+    elevation: 5,
   },
 });
 

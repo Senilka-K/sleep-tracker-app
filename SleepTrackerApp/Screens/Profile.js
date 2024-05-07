@@ -77,67 +77,74 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 20,
+    backgroundColor: "#F5F5F5", // Light grey background for the overall screen
   },
   text: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#333", // Dark grey for better contrast
   },
   form: {
     backgroundColor: "white",
     padding: 20,
     width: screenWidth - 50,
-    borderRadius: 10,
-    shadowColor: "black",
+    borderRadius: 15, // Increased border radius
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
   },
   fieldContainer: {
-    marginBottom: 15,
+    marginBottom: 20, // Increased margin for better spacing
   },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
+    fontSize: 18, // Slightly larger font size
+    fontWeight: "600", // Less bold than 'bold'
+    marginBottom: 10,
+    color: "#424242", // Soft black for labels
   },
   input: {
-    height: 40,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 5,
+    height: 45, // Taller input fields
+    borderColor: '#BDBDBD', // Softer border color
+    borderWidth: 1.5,
+    marginBottom: 12,
+    padding: 12,
+    borderRadius: 8, // Rounded corners for input fields
+    fontSize: 16, // Slightly larger font size for input
   },
   value: {
     fontSize: 16,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 5,
+    padding: 12,
+    backgroundColor: "#E0E0E0", // Lighter background for non-editable fields
+    borderRadius: 8,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
-    width: '80%',
+    marginTop: 25, // More top margin
+    width: '70%', // More breathing room on the sides
   },
   actionButton: {
-    backgroundColor: "#1976D2",
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: "#2196F3", // A fresher blue shade
+    padding: 12,
+    borderRadius: 8,
+    elevation: 3, // Slight elevation for 3D effect
   },
   deleteButton: {
-    backgroundColor: "#D32F2F",
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: "#F44336", // A vibrant red
+    padding: 12,
+    borderRadius: 8,
+    elevation: 3,
   },
   buttonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '500', // Less bold for a modern look
+    fontSize: 16, // Larger font for buttons
   },
 });
 

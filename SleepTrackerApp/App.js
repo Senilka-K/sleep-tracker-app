@@ -36,10 +36,10 @@ function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="Personalize"
+        name="Personalise"
         component={SettingsScreen}
         options={{
-          tabBarLabel: "Personalize",
+          tabBarLabel: "Personalise",
           tabBarIcon: ({ color }) => (
             <Ionicons name="settings" size={20} color={color} />
           ),

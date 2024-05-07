@@ -12,18 +12,38 @@ import {
     Alert,
   } from "react-native";
   import { useState, useEffect } from "react";
-  import { getUserId } from "../UserIdStore";
+  import SleepTimeSelector from "./SleepTime";
+//   import { getUserId } from "../UserIdStore";
   
   const screenWidth = Dimensions.get("window").width;
   
-  export default function ApplicationForm() {
+  const ApplicationForm = ( { navigation } ) =>  {
     const [name, setName] = useState("");
-    const [contactNo, setContactNo] = useState("");
-    const [comment, setComment] = useState("");
-    const [likesTracking, setLikesTracking] = useState(null);
-    const [userId, setUserId] = useState(null);
+    const [age, setAge] = useState("");
+    const [gender, setGender] = useState("");
+    const [occupation, setOccupation] = useState("");
+    // const [userId, setUserId] = useState(null);
     const [errors, setErrors] = useState({});
+
+    const validateForm = () => {
+      let formErrors = {};
+      if (!name) formErrors.name = "Name is required";
+      if (!age) formErrors.age = "Age is required";
+      if (!gender) formErrors.gender = "Gender is required";
+      if (!occupation) formErrors.occupation = "Occupation is required";
   
+      setErrors(formErrors);
+      return Object.keys(formErrors).length === 0; // Return true if no errors
+    };
+  
+    // Handle form submission
+    const handleSubmit = () => {
+      if (validateForm()) {
+        // Navigate to another screen if form is valid
+        navigation.navigate('SleepTimeSelector');
+      }
+    };
+
     return (
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -34,7 +54,7 @@ import {
           <View style={styles.container}>
             <Text style={styles.text}>Application Form</Text>
             <View style={styles.form}>
-              <Text style={styles.label}>Name</Text>
+              <Text style={styles.label}>Name:</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Enter your Name"
@@ -44,63 +64,45 @@ import {
               {errors.name ? (
                 <Text style={styles.errorText}>{errors.name}</Text>
               ) : null}
-              <Text style={styles.label}>Contact No:</Text>
+              <Text style={styles.label}>Age:</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your Contact No"
-                value={contactNo}
-                onChangeText={setContactNo}
+                placeholder="Enter your Age"
+                value={age}
+                onChangeText={setAge}
               />
-              {errors.contactNo ? (
-                <Text style={styles.errorText}>{errors.contactNo}</Text>
+              {errors.age ? (
+                <Text style={styles.errorText}>{errors.age}</Text>
               ) : null}
-              <Text style={styles.label}>Comment</Text>
+              <Text style={styles.label}>Gender</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your Comment"
-                value={comment}
-                onChangeText={setComment}
+                placeholder="Enter your Gender"
+                value={gender}
+                onChangeText={setGender}
               />
-              {errors.comment ? (
-                <Text style={styles.errorText}>{errors.comment}</Text>
+              {errors.gender ? (
+                <Text style={styles.errorText}>{errors.gender}</Text>
               ) : null}
-              <Text style={styles.label}>Do you like Tracking:</Text>
-              <View style={styles.buttonGroup}>
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    likesTracking === "yes" ? styles.buttonSelected : null,
-                  ]}
-                  onPress={() => setLikesTracking("yes")}
-                >
-                  <Text style={styles.buttonText}>
-                    yes
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    likesTracking === "no" ? styles.buttonSelected : null,
-                  ]}
-                  onPress={() => setLikesTracking("no")}
-                >
-                  <Text style={styles.buttonText}>
-                    no
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              {errors.likesTracking ? (
-                <Text style={styles.errorText}>{errors.likesTracking}</Text>
+              <Text style={styles.label}>Occupation</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your Occupation"
+                value={occupation}
+                onChangeText={setOccupation}
+              />
+              {errors.occupation ? (
+                <Text style={styles.errorText}>{errors.occupation}</Text>
               ) : null}
               <View style={styles.actionButtonGroup}>
                 <TouchableOpacity
                   style={styles.actionButton}
                 >
-                  <Text style={styles.actionButtonText}>
-                  Done
+                  <Text style={styles.actionButtonText} onPress={handleSubmit}>
+                  Submit
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={styles.actionButton}
                 >
                   <Text style={styles.actionButtonText}>
@@ -113,7 +115,7 @@ import {
                   <Text style={styles.actionButtonText}>
                   Delete
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </View>
           </View>
@@ -202,3 +204,5 @@ import {
       color: "#fff",
     },
   });
+
+  export default ApplicationForm;

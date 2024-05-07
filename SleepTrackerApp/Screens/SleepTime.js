@@ -1,35 +1,38 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 
-const SleepTimeSelector = () => {
+const SleepTimeSelector = ( { navigation } ) => {
   const [sleepTime, setSleepTime] = useState(new Date());
-  const [showSleepPicker, setShowSleepPicker] = useState(false);
+  const [showSleepPicker] = useState(true); // Always show picker
 
   const onChangeSleep = (event, selectedDate) => {
     const currentDate = selectedDate || sleepTime;
-    setShowSleepPicker(Platform.OS === 'ios'); 
     setSleepTime(currentDate);
+  };
+
+  const saveSleepTime = () => {
+    console.log('Sleep Time saved:', sleepTime.toLocaleTimeString());
+    navigation.navigate('WakeTimeSelector'); 
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Setup Your Bed Time Reminder!</Text>
-      <TouchableOpacity style={styles.button} onPress={() => setShowSleepPicker(true)}>
-        <Text style={styles.buttonText}>Setup Your Sleep Time</Text>
+      <View style={styles.pickerContainer}>
+        <DateTimePicker
+          style={styles.datetimepicker}
+          value={sleepTime}
+          mode="time"
+          display="spinner"
+          onChange={onChangeSleep}
+          textColor="#fff"
+        />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={saveSleepTime}>
+        <Text style={styles.buttonText}>Save Your Sleep Time</Text>
       </TouchableOpacity>
-      {showSleepPicker && (
-        <View style={styles.pickerContainer}>
-          <DateTimePicker
-            style={styles.datetimepicker}
-            value={sleepTime}
-            mode="time"
-            display="spinner" 
-            onChange={onChangeSleep}
-            textColor="#fff" 
-          />
-        </View>
-      )}
       <Text style={styles.timeText}>Sleep at: {sleepTime.toLocaleTimeString()}</Text>
     </View>
   );
@@ -45,12 +48,13 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '80%',
-    height: 200, 
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#333', 
+    backgroundColor: '#333',
     borderRadius: 10,
     padding: 20,
+    marginBottom: 40, // Ensure spacing between picker and button
   },
   label: {
     fontSize: 40,
@@ -64,7 +68,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
-    marginBottom: 40,
   },
   buttonText: {
     color: '#fff',
@@ -77,8 +80,8 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   datetimepicker: {
-    width: 300, 
-    height: 180, 
+    width: 300,
+    height: 180,
   },
 });
 

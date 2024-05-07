@@ -1,14 +1,17 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const Buttons = () => {
+const Buttons = ( { navigation } ) => {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>What do you expect?</Text>
       <Text style={styles.subHeaderText}>Let us know you better</Text>
       
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => console.log('Sleep Monitor')}>
+      <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('ApplicationForm')}
+        >
           <Text style={styles.buttonText}>Sleep Monitor</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => console.log('Habit Tracker')}>

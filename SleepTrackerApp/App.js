@@ -14,13 +14,20 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-//   const { t } = useTranslation();
 
 return (
     <NavigationContainer>
-      <Tab.Navigator
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Login' }} />
+        <Stack.Screen name="Buttons" component={Buttons} options={{ title: 'Select Option' }} />
+        <Stack.Screen name="ApplicationForm" component={ApplicationForm} options={{ title: 'Application Form' }} />
+        <Stack.Screen name="SleepTimeSelector" component={SleepTimeSelector} options={{ title: 'Sleep Time' }} />
+        <Stack.Screen name="WakeTimeSelector" component={WakeTimeSelector} options={{ title: 'Wake Time' }} />
+      </Stack.Navigator>
+      {/* <Tab.Navigator
         screenOptions={{
           tabBarLabelPosition: "below-icon",
           tabBarShowLabel: true,
@@ -36,8 +43,8 @@ return (
               <Ionicons name="home" size={20} color={color} />
             ),
           }}
-        />
-        <Tab.Screen
+        /> */}
+        {/* <Tab.Screen
             name="Form"
             component={ApplicationForm}
             options={{
@@ -46,8 +53,8 @@ return (
                 <Ionicons name="apps-outline" size={20} color={color} />
               ),
             }}
-          />
-          <Tab.Screen
+          /> */}
+          {/* <Tab.Screen
             name="Sleep Time"
             component={SleepTimeSelector}
             options={{
@@ -66,8 +73,8 @@ return (
                 <Ionicons name="alarm" size={20} color={color} />
               ),
             }}
-          />
-          <Tab.Screen
+          /> */}
+          {/* <Tab.Screen
             name="Selection"
             component={Buttons}
             options={{
@@ -76,8 +83,8 @@ return (
                 <Ionicons name="checkmark-circle" size={20} color={color} />
               ),
             }}
-          />
-          <Tab.Screen
+          /> */}
+          {/* <Tab.Screen
             name="Personalize"
             component={SettingsScreen}
             options={{
@@ -97,7 +104,7 @@ return (
               ),
             }}
           />
-      </Tab.Navigator>
+      </Tab.Navigator> */}
     </NavigationContainer>
 );
 }

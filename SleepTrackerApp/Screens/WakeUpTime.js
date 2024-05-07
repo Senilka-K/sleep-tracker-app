@@ -2,34 +2,34 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const WakeTimeSelector = () => {
+const WakeTimeSelector = ( { navigation } ) => {
   const [wakeTime, setWakeTime] = useState(new Date());
-  const [showWakePicker, setShowWakePicker] = useState(false);
 
   const onChangeWake = (event, selectedDate) => {
     const currentDate = selectedDate || wakeTime;
-    setShowWakePicker(Platform.OS === 'ios');
     setWakeTime(currentDate);
+  };
+
+  const saveWakeUpTime = () => {
+    console.log('Wake Up Time saved:', wakeTime.toLocaleTimeString());
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Set Your Wake-Up Alarm!</Text>
-      <TouchableOpacity style={styles.button} onPress={() => setShowWakePicker(true)}>
-        <Text style={styles.buttonText}>Set Wake-Up Time</Text>
+      <View style={styles.pickerContainer}>
+        <DateTimePicker
+          style={styles.datetimepicker}
+          value={wakeTime}
+          mode="time"
+          display="spinner"
+          onChange={onChangeWake}
+          textColor="#fff"
+        />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={saveWakeUpTime}>
+        <Text style={styles.buttonText}>Save Wake-Up Time</Text>
       </TouchableOpacity>
-      {showWakePicker && (
-        <View style={styles.pickerContainer}>
-          <DateTimePicker
-            style={styles.datetimepicker}
-            value={wakeTime}
-            mode="time"
-            display="spinner"
-            onChange={onChangeWake}
-            textColor="#fff"
-          />
-        </View>
-      )}
       <Text style={styles.timeText}>Wake up at: {wakeTime.toLocaleTimeString()}</Text>
     </View>
   );
@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     borderRadius: 10,
     padding: 20,
+    marginBottom: 40, // Ensure spacing between picker and button
   },
   label: {
     fontSize: 40,
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
-    marginBottom: 40,
   },
   buttonText: {
     color: '#fff',

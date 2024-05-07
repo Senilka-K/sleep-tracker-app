@@ -13,62 +13,69 @@ import {
   Platform,
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import Buttons from "./Buttons";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function HomeScreen({ navigation }) {
-  const [username, setUsername] = useState("");
-  const [errors, setErrors] = useState({});
-  const [loginSuccess, setLoginSuccess] = useState(false);
-
-  const validateForm = () => {
-    let errors = {};
-    if (!username) {
-      errors.username = "Username is required";
-    }
-    setErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleLogin = () => {
-    if (validateForm()) {
-      setLoginSuccess(true);
-    }
-  };
-
-  return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-      style={styles.container}
-    >
-      <Text style={styles.text}>Welcome</Text>
-      <View style={styles.form}>
-        <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your username"
-          value={username}
-          onChangeText={setUsername}
-        />
-        {errors.username && (
-          <Text style={styles.errorText}>{errors.username}</Text>
+    const [username, setUsername] = useState("");
+    const [errors, setErrors] = useState({});
+    const [loginSuccess, setLoginSuccess] = useState(false);
+  
+    const validateForm = () => {
+      let errors = {};
+      if (!username) {
+        errors.username = "Username is required";
+      }
+      setErrors(errors);
+      return Object.keys(errors).length === 0;
+    };
+  
+    const handleLogin = () => {
+        if (validateForm()) {
+          setLoginSuccess(true);
+          navigation.navigate('Buttons'); // Navigate on successful login
+        }
+      };
+      
+    return (
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        style={styles.container}
+      >
+        <Text style={styles.text}>Welcome</Text>
+        {!loginSuccess ? (
+          <View style={styles.form}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your username"
+              value={username}
+              onChangeText={setUsername}
+            />
+            {errors.username && (
+              <Text style={styles.errorText}>{errors.username}</Text>
+            )}
+            <View style={styles.actionButtonGroup}>
+              <TouchableOpacity style={styles.actionButton} onPress={handleLogin}>
+                <Text style={styles.actionButtonText}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.successText}>
+              {username} logged in successfully!
+            </Text>
+            <Buttons />
+          </View>
         )}
-        <View style={styles.actionButtonGroup}>
-          <TouchableOpacity style={styles.actionButton} onPress={handleLogin}>
-            <Text style={styles.actionButtonText}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {loginSuccess && (
-        <Text style={styles.successText}>
-          {username} logged in successfully!
-        </Text>
-      )}
-      <StatusBar style="auto" />
-    </KeyboardAvoidingView>
-  );
-}
+        <StatusBar style="auto" />
+      </KeyboardAvoidingView>
+    );
+  }
+  
 
 const styles = StyleSheet.create({
   container: {

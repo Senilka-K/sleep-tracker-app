@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Buttons from './Buttons';
 
 const WakeTimeSelector = ( { navigation } ) => {
   const [wakeTime, setWakeTime] = useState(new Date());
@@ -12,7 +13,7 @@ const WakeTimeSelector = ( { navigation } ) => {
 
   const saveWakeUpTime = () => {
     console.log('Wake Up Time saved:', wakeTime.toLocaleTimeString());
-    navigation.navigate('MainTabs')
+    navigation.navigate(Buttons)
   };
 
   return (

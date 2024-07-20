@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const sleepIcon = require('../assets/sleep_icon.png'); // Replace with your actual sleep icon
-const habitIcon = require('../assets/habit_icon.png'); // Replace with your actual habit icon
-const stressIcon = require('../assets/stress_icon.png'); // Replace with your actual stress icon
-const gameIcon = require('../assets/game_icon.png'); // Replace with your actual gamification icon
+const sleepIcon = require('../assets/sleep_icon.png'); 
+const habitIcon = require('../assets/habit_icon.png'); 
+const stressIcon = require('../assets/stress_icon.png'); 
+const gameIcon = require('../assets/game_icon.png');
 
 const Buttons = ( { navigation } ) => {
   return (

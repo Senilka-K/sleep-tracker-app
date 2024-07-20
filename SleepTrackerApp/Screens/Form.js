@@ -13,7 +13,8 @@ import {
   } from "react-native";
   import { useState, useEffect } from "react";
   import SleepTimeSelector from "./SleepTime";
-//   import { getUserId } from "../UserIdStore";
+  import { getUserId } from "../UserIdStore";
+  import { NGROK_STATIC_DOMAIN } from '@env';
   
   const screenWidth = Dimensions.get("window").width;
   
@@ -22,8 +23,17 @@ import {
     const [age, setAge] = useState("");
     const [gender, setGender] = useState("");
     const [occupation, setOccupation] = useState("");
-    // const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+      const fetchUserId = async () => {
+        const fetchedUserId = await getUserId();
+        setUserId(fetchedUserId);
+      };
+  
+      fetchUserId();
+    }, []);
 
     const validateForm = () => {
       let formErrors = {};
@@ -36,11 +46,34 @@ import {
       return Object.keys(formErrors).length === 0; // Return true if no errors
     };
   
-    // Handle form submission
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       if (validateForm()) {
-        // Navigate to another screen if form is valid
-        navigation.navigate('SleepTimeSelector');
+        const formData = {
+          userId,
+          name,
+          age,
+          gender,
+          occupation
+        };
+  
+        try {
+          const response = await fetch(`${NGROK_STATIC_DOMAIN}/formDetails`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+  
+          if (response.ok) {
+            Alert.alert('Success', 'Form details saved successfully!');
+            navigation.navigate(SleepTimeSelector); 
+          } else {
+            throw new Error('Failed to save form details');
+          }
+        } catch (error) {
+          Alert.alert('Error', error.message);
+        }
       }
     };
 

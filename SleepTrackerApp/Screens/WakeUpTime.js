@@ -1,19 +1,48 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Buttons from './Buttons';
+import { NGROK_STATIC_DOMAIN } from '@env';
+import { getUserId } from '../UserIdStore';
 
 const WakeTimeSelector = ( { navigation } ) => {
   const [wakeTime, setWakeTime] = useState(new Date());
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const fetchedUserId = await getUserId();
+      setUserId(fetchedUserId);
+    };
+
+    fetchUserId();
+  }, []);
 
   const onChangeWake = (event, selectedDate) => {
     const currentDate = selectedDate || wakeTime;
     setWakeTime(currentDate);
   };
 
-  const saveWakeUpTime = () => {
-    console.log('Wake Up Time saved:', wakeTime.toLocaleTimeString());
-    navigation.navigate(Buttons)
+  const saveWakeUpTime = async () => {
+    if (!userId) {
+      Alert.alert('Error', 'User not authenticated');
+      return;
+    }
+    try {
+      const response = await fetch(`${NGROK_STATIC_DOMAIN}/update-wake-up-time`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userId, wakeUpTime: wakeTime.toISOString() })
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        Alert.alert('Success', 'Wake up time saved successfully');
+        navigation.navigate('Buttons');
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', `Failed to save wake up time: ${error.message}`);
+    }
   };
 
   return (

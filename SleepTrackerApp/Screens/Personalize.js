@@ -1,16 +1,65 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
-
+import { NGROK_STATIC_DOMAIN } from '@env';
+import { getUserId } from '../UserIdStore';
 
 const SettingsScreen = () => {
+  const [userId, setUserId] = useState(null);
   const [sleepTime, setSleepTime] = useState(new Date());
   const [wakeTime, setWakeTime] = useState(new Date());
   const [alarmFrequency, setAlarmFrequency] = useState('daily');
   const [alarmTone, setAlarmTone] = useState('beep');
   const [showSleepPicker, setShowSleepPicker] = useState(false);
   const [showWakePicker, setShowWakePicker] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedUserId = await getUserId();
+      if (fetchedUserId) {
+        setUserId(fetchedUserId);
+        try {
+          const response = await fetch(`${NGROK_STATIC_DOMAIN}/times/${fetchedUserId}`);
+          const data = await response.json();
+          if (response.ok) {
+            setSleepTime(new Date(data.sleepTime));
+            setWakeTime(new Date(data.wakeUpTime));
+          } else {
+            throw new Error(data.message);
+          }
+        } catch (error) {
+          Alert.alert('Error', `Failed to fetch times: ${error.message}`);
+        }
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const onSaveTimes = async () => {
+    try {
+      const response = await fetch(`${NGROK_STATIC_DOMAIN}/update-times/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sleepTime: sleepTime.toISOString(),
+          wakeUpTime: wakeTime.toISOString(),
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        Alert.alert('Success', 'Times updated successfully');
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', `Failed to update times: ${error.message}`);
+    }
+  };
 
   const onChangeSleepTime = (event, selectedDate) => {
     const currentDate = selectedDate || sleepTime;
@@ -57,6 +106,10 @@ const SettingsScreen = () => {
         )}
         <Text style={styles.valueText}>Wake up at: {wakeTime.toLocaleTimeString()}</Text>
       </View>
+
+      <TouchableOpacity style={styles.button} onPress={onSaveTimes}>
+          <Text style={styles.buttonText}>Save Sleep & Wake-Up Times</Text>
+      </TouchableOpacity>
 
       <View style={styles.section}>
         <Text style={styles.label}>Alarm Frequency:</Text>

@@ -1,20 +1,49 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import { NGROK_STATIC_DOMAIN } from '@env';
+import { getUserId } from '../UserIdStore';
 
 const SleepTimeSelector = ( { navigation } ) => {
   const [sleepTime, setSleepTime] = useState(new Date());
-  const [showSleepPicker] = useState(true); // Always show picker
+  const [showSleepPicker] = useState(true);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const fetchedUserId = await getUserId();
+      setUserId(fetchedUserId);
+    };
+
+    fetchUserId();
+  }, []);
 
   const onChangeSleep = (event, selectedDate) => {
     const currentDate = selectedDate || sleepTime;
     setSleepTime(currentDate);
   };
 
-  const saveSleepTime = () => {
-    console.log('Sleep Time saved:', sleepTime.toLocaleTimeString());
-    navigation.navigate('WakeTimeSelector'); 
+  const saveSleepTime = async () => {
+    if (!userId) {
+      Alert.alert('Error', 'User not authenticated');
+      return;
+    }
+    try {
+      const response = await fetch(`${NGROK_STATIC_DOMAIN}/update-sleep-time`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userId, sleepTime: sleepTime.toISOString() })
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        Alert.alert('Success', 'Sleep time saved successfully');
+        navigation.navigate('WakeTimeSelector');
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', `Failed to save sleep time: ${error.message}`);
+    }
   };
 
   return (

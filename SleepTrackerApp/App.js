@@ -12,8 +12,6 @@ import SleepTracker from "./Screens/Tracker";
 import SleepStatisticsScreen from "./Screens/Statics";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-// import { useState } from "react";
-
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -74,12 +72,12 @@ export default function App() {
 return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Login' }} />
+        <Stack.Screen name="Login" component={HomeScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="Buttons" component={Buttons} options={{ title: 'Select Option' }} />
         <Stack.Screen name="ApplicationForm" component={ApplicationForm} options={{ title: 'Application Form' }} />
         <Stack.Screen name="SleepTimeSelector" component={SleepTimeSelector} options={{ title: 'Sleep Time' }} />
         <Stack.Screen name="WakeTimeSelector" component={WakeTimeSelector} options={{ title: 'Wake Time' }} />
-        <Stack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
+        <Stack.Screen name="Home" component={MainTabs} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
 );

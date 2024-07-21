@@ -71,6 +71,76 @@ app.post("/check-form-status", async (req, res) => {
     }
   });
 
+// Endpoint to update sleep time
+app.post('/update-sleep-time', async (req, res) => {
+    const { userId, sleepTime } = req.body;
+    try {
+      const result = await FormDetails.findOneAndUpdate(
+        { userId: userId },
+        { $set: { sleepTime: new Date(sleepTime) } },
+        { new: true, upsert: true }
+      );
+      res.status(200).json({ message: 'Sleep time updated', data: result });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating sleep time', error: error });
+    }
+});
+
+// Endpoint to update wake up time
+app.post('/update-wake-up-time', async (req, res) => {
+    const { userId, wakeUpTime } = req.body;
+    try {
+      const result = await FormDetails.findOneAndUpdate(
+        { userId: userId },
+        { $set: { wakeUpTime: new Date(wakeUpTime) } },
+        { new: true, upsert: true }
+      );
+      res.status(200).json({ message: 'Wake up time updated', data: result });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating wake up time', error: error });
+    }
+});
+
+
+// GET endpoint to retrieve sleep and wake times
+app.get('/times/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const Times = await FormDetails.findOne({ userId: userId });
+      if (!Times) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const times = {
+        sleepTime: Times.sleepTime,
+        wakeUpTime: Times.wakeUpTime
+      };
+      res.json(times);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching user times", error: error.message });
+    }
+  });
+
+// POST endpoint to update sleep and wake times
+app.post('/update-times/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { sleepTime, wakeUpTime } = req.body;
+    try {
+        const updated = await FormDetails.findOneAndUpdate(
+            { userId: userId },
+            { $set: { sleepTime: new Date(sleepTime), wakeUpTime: new Date(wakeUpTime) } },
+            { new: true }
+        );
+        if (updated) {
+            res.status(200).json({ message: "Times updated successfully", data: updated });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error updating times", error: error.message });
+    }
+});
+
+
   // Listen on a port
 const PORT = process.env.PORT || 5080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

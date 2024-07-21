@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
+
 const sleepIcon = require('../assets/sleep_icon.png'); 
 const habitIcon = require('../assets/habit_icon.png'); 
 const stressIcon = require('../assets/stress_icon.png'); 
@@ -15,7 +16,10 @@ const Buttons = ( { navigation } ) => {
       <View style={styles.buttonContainer}>
       <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('ApplicationForm')}
+          onPress={() => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          })}
         >
           <Image source={sleepIcon} style={styles.icon} />
           <Text style={styles.buttonText}>Sleep Monitor</Text>

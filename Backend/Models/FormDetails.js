@@ -6,6 +6,8 @@ const formDetailsSchema = new mongoose.Schema({
   age: { type: String, required: true },
   gender: { type: String, required: true },
   occupation: { type: String, required: true },
+  sleepTime: { type: Date },
+  wakeUpTime: { type: Date },
 });
 
 const FormDetail = mongoose.model("FormDetail", formDetailsSchema);

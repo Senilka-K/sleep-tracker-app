@@ -140,6 +140,70 @@ app.post('/update-times/:userId', async (req, res) => {
     }
 });
 
+// Getting already filled formData endpoint
+app.post("/formData", async (req, res) => {
+    const { userId } = req.body;
+    try {
+      const formData = await FormDetails.findOne({ userId: userId });
+      if (!formData) {
+        return res
+          .status(404)
+          .json({ message: "Form data not found for the given user ID" });
+      }
+      res.json(formData);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error retrieving form data", error: error.message });
+    }
+});
+
+// Form delete endpoint
+app.delete("/delete-form", async (req, res) => {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    try {
+      const result = await FormDetails.findOneAndDelete({ userId: userId });
+      if (!result) {
+        return res
+          .status(404)
+          .json({ message: "Form data not found for the given user" });
+      }
+      res.status(200).json({ message: "Form data deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Error deleting form data", error: error.message });
+    }
+  });
+
+// Form edit endpoint
+app.put("/edit-form", async (req, res) => {
+    const { userId } = req.body;
+    console.log(userId);
+    try {
+      const formData = await FormDetails.findOne({ userId: userId });
+      if (!formData) {
+        return res
+          .status(404)
+          .json({ message: "Form data not found for the given user ID" });
+      }
+      formData.name = req.body.name || formData.name;
+      formData.age = req.body.age || formData.age;
+      formData.gender = req.body.gender || formData.gender;
+      formData.occupation = req.body.occupation || formData.occupation;  
+      await formData.save();
+      res.status(200).json({ message: "Form updated successfully" });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Error updating form data", error: error.message });
+    }
+  });
 
   // Listen on a port
 const PORT = process.env.PORT || 5080;

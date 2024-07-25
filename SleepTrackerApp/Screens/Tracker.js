@@ -5,7 +5,7 @@ const SleepTracker = () => {
   const [isSleeping, setIsSleeping] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [currentTime, setCurrentTime] = useState(null);
-
+  
   useEffect(() => {
     let interval = null;
     if (isSleeping) {

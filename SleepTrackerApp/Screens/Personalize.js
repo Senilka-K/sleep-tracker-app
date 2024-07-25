@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { NGROK_STATIC_DOMAIN } from '@env';
@@ -9,10 +9,15 @@ const SettingsScreen = () => {
   const [userId, setUserId] = useState(null);
   const [sleepTime, setSleepTime] = useState(new Date());
   const [wakeTime, setWakeTime] = useState(new Date());
+  const [initialSleepTime, setInitialSleepTime] = useState(new Date(sleepTime));
+  const [initialWakeTime, setInitialWakeTime] = useState(new Date(wakeTime));
   const [alarmFrequency, setAlarmFrequency] = useState('daily');
   const [alarmTone, setAlarmTone] = useState('beep');
   const [showSleepPicker, setShowSleepPicker] = useState(false);
   const [showWakePicker, setShowWakePicker] = useState(false);
+  const [isSaveEnabled, setIsSaveEnabled] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,8 +28,12 @@ const SettingsScreen = () => {
           const response = await fetch(`${NGROK_STATIC_DOMAIN}/times/${fetchedUserId}`);
           const data = await response.json();
           if (response.ok) {
-            setSleepTime(new Date(data.sleepTime));
-            setWakeTime(new Date(data.wakeUpTime));
+            const fetchedSleepTime = new Date(data.sleepTime);
+            const fetchedWakeTime = new Date(data.wakeUpTime);
+            setSleepTime(fetchedSleepTime);
+            setWakeTime(fetchedWakeTime);
+            setInitialSleepTime(fetchedSleepTime);
+            setInitialWakeTime(fetchedWakeTime);
           } else {
             throw new Error(data.message);
           }
@@ -38,6 +47,7 @@ const SettingsScreen = () => {
   }, []);
 
   const onSaveTimes = async () => {
+    setIsSaving(true);
     try {
       const response = await fetch(`${NGROK_STATIC_DOMAIN}/update-times/${userId}`, {
         method: 'POST',
@@ -53,24 +63,56 @@ const SettingsScreen = () => {
       const data = await response.json();
       if (response.ok) {
         Alert.alert('Success', 'Times updated successfully');
+        setInitialSleepTime(new Date(sleepTime));
+        setInitialWakeTime(new Date(wakeTime));
+        setIsSaveEnabled(false);
       } else {
         throw new Error(data.message);
       }
     } catch (error) {
       Alert.alert('Error', `Failed to update times: ${error.message}`);
+    } finally {
+      setIsSaving(false); 
     }
   };
 
+  const formatTime = (date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }).format(date);
+  };
+
   const onChangeSleepTime = (event, selectedDate) => {
-    const currentDate = selectedDate || sleepTime;
-    setShowSleepPicker(false);
-    setSleepTime(currentDate);
+    if (event.type === 'set') { 
+      const currentDate = selectedDate || sleepTime;
+      setShowSleepPicker(true);
+      setSleepTime(currentDate);
+      checkForChanges(currentDate, wakeTime);
+    } else {
+      setShowSleepPicker(false);
+    }
   };
 
   const onChangeWakeTime = (event, selectedDate) => {
-    const currentDate = selectedDate || wakeTime;
-    setShowWakePicker(false);
-    setWakeTime(currentDate);
+    if (event.type === 'set') { 
+      const currentDate = selectedDate || wakeTime;
+      setShowWakePicker(true);
+      setWakeTime(currentDate);
+      checkForChanges(sleepTime, currentDate);
+    } else {
+      setShowWakePicker(false);
+    }
+  };
+
+  const checkForChanges = (newSleepTime, newWakeTime) => {
+    if (newSleepTime.toISOString() !== initialSleepTime.toISOString() ||
+        newWakeTime.toISOString() !== initialWakeTime.toISOString()) {
+      setIsSaveEnabled(true);
+    } else {
+      setIsSaveEnabled(false);
+    }
   };
 
   return (
@@ -88,7 +130,7 @@ const SettingsScreen = () => {
             onChange={onChangeSleepTime}
           />
         )}
-        <Text style={styles.valueText}>Sleep at: {sleepTime.toLocaleTimeString()}</Text>
+        <Text style={styles.valueText}>Sleep at: {formatTime(sleepTime)}</Text>
       </View>
 
       <View style={styles.section}>
@@ -104,11 +146,15 @@ const SettingsScreen = () => {
             onChange={onChangeWakeTime}
           />
         )}
-        <Text style={styles.valueText}>Wake up at: {wakeTime.toLocaleTimeString()}</Text>
+        <Text style={styles.valueText}>Wake up at: {formatTime(wakeTime)}</Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={onSaveTimes}>
-          <Text style={styles.buttonText}>Save Sleep & Wake-Up Times</Text>
+      <TouchableOpacity style={styles.button} onPress={onSaveTimes} disabled={!isSaveEnabled || isSaving}>
+        {isSaving ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+            <Text style={styles.buttonText}>Save Changes</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.section}>

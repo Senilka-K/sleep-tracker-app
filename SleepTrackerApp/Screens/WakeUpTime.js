@@ -22,6 +22,14 @@ const WakeTimeSelector = ( { navigation } ) => {
     setWakeTime(currentDate);
   };
 
+  const formatTime = (date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }).format(date);
+  };
+
   const saveWakeUpTime = async () => {
     if (!userId) {
       Alert.alert('Error', 'User not authenticated');
@@ -61,7 +69,7 @@ const WakeTimeSelector = ( { navigation } ) => {
       <TouchableOpacity style={styles.button} onPress={saveWakeUpTime}>
         <Text style={styles.buttonText}>Save Wake-Up Time</Text>
       </TouchableOpacity>
-      <Text style={styles.timeText}>Wake up at: {wakeTime.toLocaleTimeString()}</Text>
+      <Text style={styles.timeText}>Wake up at: {formatTime(wakeTime)}</Text>
     </View>
   );
 };

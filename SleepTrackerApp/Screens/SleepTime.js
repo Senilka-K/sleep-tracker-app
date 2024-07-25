@@ -23,6 +23,14 @@ const SleepTimeSelector = ( { navigation } ) => {
     setSleepTime(currentDate);
   };
 
+  const formatTime = (date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }).format(date);
+  };
+
   const saveSleepTime = async () => {
     if (!userId) {
       Alert.alert('Error', 'User not authenticated');
@@ -62,7 +70,7 @@ const SleepTimeSelector = ( { navigation } ) => {
       <TouchableOpacity style={styles.button} onPress={saveSleepTime}>
         <Text style={styles.buttonText}>Save Your Sleep Time</Text>
       </TouchableOpacity>
-      <Text style={styles.timeText}>Sleep at: {sleepTime.toLocaleTimeString()}</Text>
+      <Text style={styles.timeText}>Sleep at: {formatTime(sleepTime)}</Text>
     </View>
   );
 };

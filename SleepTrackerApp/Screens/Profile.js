@@ -15,10 +15,11 @@ import { useState, useEffect } from "react";
 import { NGROK_STATIC_DOMAIN } from '@env';
 import { getUserId } from "../UserIdStore";
 import { useIsFocused } from "@react-navigation/native";
+import ApplicationForm from "./Form";
 
 const screenWidth = Dimensions.get("window").width;
 
-const ApplicationFormEditable = () => {
+const ApplicationFormEditable = ({ navigation }) => {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
@@ -113,6 +114,7 @@ const ApplicationFormEditable = () => {
           setGender("");
           setOccupation("");
           setIsEditable(true);
+          navigation.navigate(ApplicationForm);
           console.log("Form data deleted successfully");
           Alert.alert("Success", "Form data deleted successfully");
         } else {

@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const User = require("./Models/Users");
 const FormDetails = require("./Models/FormDetails");
+const SleepData = require("./Models/Sleep");
 
 require('dotenv').config();
 
@@ -202,6 +203,42 @@ app.put("/edit-form", async (req, res) => {
       res
         .status(500)
         .json({ message: "Error updating form data", error: error.message });
+    }
+  });
+
+  // Sleep Endpoint
+  app.post('/sleep', async (req, res) => {
+    try {
+      const { userId } = req.body;
+      const newSleepRecord = new SleepData({
+        userId: userId,
+        sleepTime: new Date() // Record the current time as sleep time
+      });
+  
+      await newSleepRecord.save();
+      res.status(201).json(newSleepRecord);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to record sleep time", error: error.message });
+    }
+  });
+
+  // Wake up endpoint
+  app.put('/wake/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const sleepRecord = await SleepData.findOne({ userId: userId, wakeUpTime: { $exists: false } });
+  
+      if (!sleepRecord) {
+        return res.status(404).json({ message: "Sleep record not found or wake-up time already recorded." });
+      }
+  
+      sleepRecord.wakeUpTime = new Date(); // Record current time as wake-up time
+      sleepRecord.sleepDuration = new Date(sleepRecord.wakeUpTime - sleepRecord.sleepTime); // Calculate duration
+  
+      await sleepRecord.save();
+      res.status(200).json(sleepRecord);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update wake-up time", error: error.message });
     }
   });
 

@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { spawn } = require('child_process');
 const User = require("./Models/Users");
 const FormDetails = require("./Models/FormDetails");
 const SleepData = require("./Models/Sleep");
@@ -222,25 +223,109 @@ app.put("/edit-form", async (req, res) => {
     }
   });
 
-  // Wake up endpoint
-  app.put('/wake/:userId', async (req, res) => {
-    try {
-      const { userId } = req.params;
-      const sleepRecord = await SleepData.findOne({ userId: userId, wakeUpTime: { $exists: false } });
-  
-      if (!sleepRecord) {
-        return res.status(404).json({ message: "Sleep record not found or wake-up time already recorded." });
-      }
-  
-      sleepRecord.wakeUpTime = new Date(); // Record current time as wake-up time
-      sleepRecord.sleepDuration = new Date(sleepRecord.wakeUpTime - sleepRecord.sleepTime); // Calculate duration
-  
-      await sleepRecord.save();
-      res.status(200).json(sleepRecord);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update wake-up time", error: error.message });
+// Wake up endpoint
+app.put('/wake/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const sleepRecord = await SleepData.findOne({ userId: userId });
+    const formDetails = await FormDetails.findOne({ userId: userId }, 'age gender');
+
+    if (!sleepRecord) {
+      return res.status(404).json({ message: "Sleep record not found or wake-up time already recorded." });
     }
-  });
+
+    sleepRecord.wakeUpTime = new Date(); // Record current time as wake-up time
+    sleepRecord.sleepDuration = new Date(sleepRecord.wakeUpTime - sleepRecord.sleepTime); // Calculate duration
+
+    const temp = {
+      userId: sleepRecord.userId,
+      sleepDuration: sleepRecord.sleepDuration,
+      age: formDetails.age,
+      gender: formDetails.gender,
+      stressLevel: 2,
+      bmiCategory: 3,
+      heartRate: 77,
+      bloodPressure: "126/83"
+    };
+
+    const child = spawn('python3', ['../Model/model.py', JSON.stringify(temp)]);
+    let output = "";
+
+    child.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    child.stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`);
+    });
+    
+    child.on('close', (code) => {
+      console.log(`Child process exited with code ${code}`);
+      if (code === 0) {
+        try {
+          const result = JSON.parse(output.trim());
+          res.status(200).json({ message: "Success", data: result });
+        } catch (parseError) {
+          console.error('Error parsing output from Python script:', parseError);
+          res.status(500).json({ message: "Failed to parse model output", error: parseError.message });
+        }
+      } else {
+        res.status(500).json({ message: "Failed to execute model script", error: output.trim() });
+      }
+    });
+
+  //   child.on('close', (code) => {
+  //     console.log(`Child process exited with code ${code}`);
+  //     console.log("Final output:", output);
+  //     if (code === 0) {
+  //         res.status(200).json({ message: "Success", data: output.trim() });
+  //     } else {
+  //         res.status(500).json({ message: "Failed to execute model script" });
+  //     }
+  // });
+
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update wake-up time", error: error.message });
+  }
+});
+
+//   // Endpoint to get specific user form details and calculated sleep duration
+// app.get('/user-summary/:userId', async (req, res) => {
+//   const { userId } = req.params;
+
+//   try {
+//       const formDetails = await FormDetails.findOne({ userId: userId }, 'userId age gender');
+//       const sleepRecords = await SleepData.find({ userId: userId });
+
+//       if (!formDetails) {
+//           return res.status(404).json({ message: "Form details not found" });
+//       }
+
+//       // Calculate total sleep duration from all sleep records
+//       let totalSleepDuration = 0;  // Initialize total sleep duration in milliseconds
+//       sleepRecords.forEach(record => {
+//           if (record.sleepTime && record.wakeUpTime) {
+//               // Calculate duration in milliseconds
+//               const duration = new Date(record.wakeUpTime).getTime() - new Date(record.sleepTime).getTime();
+//               totalSleepDuration += duration;
+//           }
+//       });
+
+//       const userSummary = {
+//           userId: formDetails.userId,
+//           age: formDetails.age,
+//           gender: formDetails.gender,
+//       };
+
+//       // Optionally convert milliseconds to hours or minutes
+//       userSummary.totalSleepDurationHours = totalSleepDuration / (1000 * 60 * 60); // Convert to hours
+
+//       res.status(200).json(userSummary);
+//   } catch (error) {
+//       res.status(500).json({ message: "Error retrieving user summary", error: error.message });
+//   }
+// });
+
 
   // Listen on a port
 const PORT = process.env.PORT || 5080;

@@ -238,7 +238,6 @@ app.put('/wake/:userId', async (req, res) => {
     sleepRecord.sleepDuration = new Date(sleepRecord.wakeUpTime - sleepRecord.sleepTime); // Calculate duration
 
     const temp = {
-      userId: sleepRecord.userId,
       sleepDuration: sleepRecord.sleepDuration,
       age: formDetails.age,
       gender: formDetails.gender,

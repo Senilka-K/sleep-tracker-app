@@ -227,7 +227,12 @@ app.put("/edit-form", async (req, res) => {
 app.put('/wake/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const sleepRecord = await SleepData.findOne({ userId: userId });
+    const sleepRecord = await SleepData.findOne({
+      userId: userId,
+      wakeUpTime: { $exists: false },    // Ensures no wakeUpTime is recorded
+      sleepDuration: { $exists: false }, // Ensures no sleepDuration is recorded
+      sleepQuality: { $exists: false }   // Ensures no sleepQuality is recorded
+    });
     const formDetails = await FormDetails.findOne({ userId: userId }, 'age gender');
 
     if (!sleepRecord) {
@@ -236,6 +241,7 @@ app.put('/wake/:userId', async (req, res) => {
 
     sleepRecord.wakeUpTime = new Date(); // Record current time as wake-up time
     sleepRecord.sleepDuration = new Date(sleepRecord.wakeUpTime - sleepRecord.sleepTime); // Calculate duration
+    await sleepRecord.save();
 
     const temp = {
       sleepDuration: sleepRecord.sleepDuration,
@@ -258,11 +264,14 @@ app.put('/wake/:userId', async (req, res) => {
       console.error(`stderr: ${data}`);
     });
     
-    child.on('close', (code) => {
+    child.on('close', async (code) => {
       console.log(`Child process exited with code ${code}`);
       if (code === 0) {
         try {
           const result = JSON.parse(output.trim());
+          // Ensure result.sleepQuality is parsed as an integer
+          sleepRecord.sleepQuality = parseInt(result.sleepQuality);
+          await sleepRecord.save();
           res.status(200).json({ message: "Success", data: result });
         } catch (parseError) {
           console.error('Error parsing output from Python script:', parseError);
@@ -273,58 +282,41 @@ app.put('/wake/:userId', async (req, res) => {
       }
     });
 
-  //   child.on('close', (code) => {
-  //     console.log(`Child process exited with code ${code}`);
-  //     console.log("Final output:", output);
-  //     if (code === 0) {
-  //         res.status(200).json({ message: "Success", data: output.trim() });
-  //     } else {
-  //         res.status(500).json({ message: "Failed to execute model script" });
-  //     }
-  // });
 
   } catch (error) {
     res.status(500).json({ message: "Failed to update wake-up time", error: error.message });
   }
 });
 
-//   // Endpoint to get specific user form details and calculated sleep duration
-// app.get('/user-summary/:userId', async (req, res) => {
-//   const { userId } = req.params;
+// GET endpoint to fetch the latest sleep quality and last 7 sleep durations for a specific user
+app.get('/sleep-quality/:userId', async (req, res) => {
+  const { userId } = req.params;
 
-//   try {
-//       const formDetails = await FormDetails.findOne({ userId: userId }, 'userId age gender');
-//       const sleepRecords = await SleepData.find({ userId: userId });
+  try {
+    const sleepRecords = await SleepData.find({ userId: userId })
+      .sort({ wakeUpTime: -1 }) // Sort by wakeUpTime in descending order
+      .limit(7) // Limit to the last 7 records
+      .select('sleepDuration wakeUpTime sleepTime sleepQuality') // Include sleepQuality
+      .exec();
 
-//       if (!formDetails) {
-//           return res.status(404).json({ message: "Form details not found" });
-//       }
+    if (sleepRecords.length === 0) {
+      return res.status(404).json({ message: "No sleep records found for this user." });
+    }
 
-//       // Calculate total sleep duration from all sleep records
-//       let totalSleepDuration = 0;  // Initialize total sleep duration in milliseconds
-//       sleepRecords.forEach(record => {
-//           if (record.sleepTime && record.wakeUpTime) {
-//               // Calculate duration in milliseconds
-//               const duration = new Date(record.wakeUpTime).getTime() - new Date(record.sleepTime).getTime();
-//               totalSleepDuration += duration;
-//           }
-//       });
+    const sleepData = sleepRecords.map(sleep => ({
+      durationHours: ((sleep.wakeUpTime - sleep.sleepTime) / 3600000).toFixed(1),
+      sleepQuality: sleep.sleepQuality,
+      sleepDate: sleep.sleepTime.toISOString().substring(0, 10)
+    }));
 
-//       const userSummary = {
-//           userId: formDetails.userId,
-//           age: formDetails.age,
-//           gender: formDetails.gender,
-//       };
-
-//       // Optionally convert milliseconds to hours or minutes
-//       userSummary.totalSleepDurationHours = totalSleepDuration / (1000 * 60 * 60); // Convert to hours
-
-//       res.status(200).json(userSummary);
-//   } catch (error) {
-//       res.status(500).json({ message: "Error retrieving user summary", error: error.message });
-//   }
-// });
-
+    res.status(200).json({
+      lastSleepData: sleepData
+    });
+  } catch (error) {
+    console.error("Failed to retrieve sleep data:", error);
+    res.status(500).json({ message: "Error retrieving sleep data", error: error.message });
+  }
+});
 
   // Listen on a port
 const PORT = process.env.PORT || 5080;

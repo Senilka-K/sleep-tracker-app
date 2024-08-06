@@ -1,87 +1,104 @@
-import React, { useState } from 'react';
-import { ScrollView, Text, StyleSheet, Button, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, Text, StyleSheet, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { NGROK_STATIC_DOMAIN } from '@env';
+import { getUserId } from '../UserIdStore';
 
 const SleepStatisticsScreen = () => {
   const [date, setDate] = useState(new Date());
+  const [userId, setUserId] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [sleepQuality, setSleepQuality] = useState('Unknown');
+  const [sleepDurations, setSleepDurations] = useState([]);
 
-  // Define hardcoded data map
-  const dateToDataMap = {
-    '2024-04-30': { quality: 'Poor', data: [10, 20, 30, 40, 50] },
-    '2024-05-01': { quality: 'Fair', data: [20, 45, 28, 80, 99, 43] },
-    '2024-05-02': { quality: 'Good', data: [60, 70, 75, 50, 30, 20] }
-  };
-
-  // Function to retrieve data and quality based on the date
-  const getDataForDate = (selectedDate) => {
-    const formattedDate = selectedDate.toISOString().split('T')[0];
-    return dateToDataMap[formattedDate] || {
-      quality: 'Unknown',
-      data: [0, 0, 0, 0]  // Provide a default data set
+  useEffect(() => {
+    const initializeData = async () => {
+      const fetchedUserId = await getUserId();
+      setUserId(fetchedUserId);
+      if (fetchedUserId) {
+        fetchSleepData(fetchedUserId);
+      }
     };
+
+    initializeData();
+  }, []);
+
+  const categorizeSleepQuality = (quality) => {
+    if (quality >= 9) {
+      return 'Good';
+    } else if (quality >= 7) {
+      return 'Fair';
+    } else {
+      return 'Poor';
+    }
   };
 
-  const [chartData, setChartData] = useState(getDataForDate(new Date())); // Initialize with default data
-
-  const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowDatePicker(false);
-    setDate(currentDate);
-    setChartData(getDataForDate(currentDate)); // Update data when date changes
+  const fetchSleepData = async (userId) => {
+    try {
+      const response = await fetch(`${NGROK_STATIC_DOMAIN}/sleep-quality/${userId}`);
+      const json = await response.json();
+      if (response.ok) {
+        setSleepDurations(json.lastSleepData.map(data => ({
+          quality: categorizeSleepQuality(data.sleepQuality),
+          duration: Number(data.durationHours),
+          date: data.sleepDate 
+        })));
+      } else {
+        throw new Error(json.message);
+      }
+    } catch (error) {
+      console.error("Failed to fetch sleep data:", error);
+      setSleepQuality('Error fetching data');
+    }
   };
 
-  const formatDate = (date) => {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const handleDataPointClick = (dataIndex) => {
+    const sleepData = sleepDurations[dataIndex];
+    if (sleepData) {
+      setSleepQuality(sleepData.quality);
+      setDate(new Date(sleepData.date));
+    }
   };
 
   const chartConfig = {
     backgroundGradientFrom: "#fff",
     backgroundGradientTo: "#f8f8f8",
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Now black for better visibility
-    strokeWidth: 2
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    strokeWidth: 2,
+    decimalPlaces: 1, // optional, defaults to 2dp
+    useShadowColorFromDataset: false // optional
   };
 
   const lineChartData = {
-    labels: ["10 PM", "12 AM", "2 AM", "4 AM", "6 AM"], // Adjust as needed
-    datasets: [
-      {
-        data: chartData.data,
-        color: (opacity = 1) => `rgba(255, 99, 132, ${opacity})`, // Adjusted for better visibility in light theme
-        strokeWidth: 2
-      }
-    ]
+    labels: sleepDurations.map((_, i) => (i + 1).toString()),
+    datasets: [{
+      data: sleepDurations.map(data => data.duration),
+      color: (opacity = 1) => `rgba(255, 99, 132, ${opacity})`,
+      strokeWidth: 2
+    }]
   };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Sleep Journal</Text>
       <View style={styles.dateContainer}>
-        <Text style={styles.dateDisplay}>Date: {formatDate(date)}</Text>
-        <Button title="Pick Date" onPress={() => setShowDatePicker(true)} color="#6200EE" />
+        <Text style={styles.dateDisplay}>Date: {date.toISOString().substring(0, 10)}</Text>
       </View>
-      {showDatePicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onChangeDate}
-        />
-      )}
 
       <Text style={styles.subtitle}>Sleep Quality</Text>
-      <Text style={styles.sleepQuality}>{chartData.quality}</Text>
+      <Text style={styles.sleepQuality}>{sleepQuality}</Text>
 
       <View style={styles.chartContainer}>
         <LineChart
           data={lineChartData}
-          width={300}
+          width={320}
           height={220}
           chartConfig={chartConfig}
           bezier
+          onDataPointClick={({ index }) => handleDataPointClick(index)}
         />
+        <Text style={styles.axisLabel}>Your Last {sleepDurations.length} Naps</Text>
       </View>
     </ScrollView>
   );
@@ -140,6 +157,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1, // Lighter shadow for subtlety
     shadowRadius: 8,
     elevation: 5,
+  },
+  axisLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    textAlign: 'center'
   },
 });
 

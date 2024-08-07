@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, StyleSheet, View } from 'react-native';
+import { ScrollView, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { NGROK_STATIC_DOMAIN } from '@env';
 import { getUserId } from '../UserIdStore';
 
 const SleepStatisticsScreen = () => {
   const [date, setDate] = useState(new Date());
   const [userId, setUserId] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [sleepQuality, setSleepQuality] = useState('Unknown');
+  const [sleepQuality, setSleepQuality] = useState('');
   const [sleepDurations, setSleepDurations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const initializeData = async () => {
@@ -39,17 +39,22 @@ const SleepStatisticsScreen = () => {
       const response = await fetch(`${NGROK_STATIC_DOMAIN}/sleep-quality/${userId}`);
       const json = await response.json();
       if (response.ok) {
-        setSleepDurations(json.lastSleepData.map(data => ({
+        const validDurations = json.lastSleepData.map(data => ({
           quality: categorizeSleepQuality(data.sleepQuality),
           duration: Number(data.durationHours),
-          date: data.sleepDate 
-        })));
+          date: data.sleepDate
+        })).filter(data => isFinite(data.duration));
+
+        setSleepDurations(validDurations);
       } else {
         throw new Error(json.message);
       }
     } catch (error) {
       console.error("Failed to fetch sleep data:", error);
       setSleepQuality('Error fetching data');
+      setError(error.message);
+    } finally {
+      setLoading(false);  
     }
   };
 
@@ -66,7 +71,7 @@ const SleepStatisticsScreen = () => {
     backgroundGradientTo: "#f8f8f8",
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     strokeWidth: 2,
-    decimalPlaces: 1,
+    decimalPlaces: 2,
     useShadowColorFromDataset: false 
   };
 
@@ -81,26 +86,37 @@ const SleepStatisticsScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Sleep Journal</Text>
-      <View style={styles.dateContainer}>
-        <Text style={styles.dateDisplay}>Date: {date.toISOString().substring(0, 10)}</Text>
+    <Text style={styles.header}>Sleep Journal</Text>
+    {loading ? (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="grey" />
       </View>
-
-      <Text style={styles.subtitle}>Sleep Quality</Text>
-      <Text style={styles.sleepQuality}>{sleepQuality}</Text>
-
-      <View style={styles.chartContainer}>
-        <LineChart
-          data={lineChartData}
-          width={320}
-          height={220}
-          chartConfig={chartConfig}
-          bezier
-          onDataPointClick={({ index }) => handleDataPointClick(index)}
-        />
-        <Text style={styles.axisLabel}>Your Last {sleepDurations.length} Naps</Text>
-      </View>
-    </ScrollView>
+    ) : (
+      <>
+        <View style={styles.dateContainer}>
+          <Text style={styles.dateDisplay}>Date: {date.toISOString().substring(0, 10)}</Text>
+        </View>
+        <Text style={styles.subtitle}>Sleep Quality</Text>
+        <Text style={styles.sleepQuality}>{sleepQuality}</Text>
+        <View style={styles.chartContainer}>
+          {sleepDurations.length > 0 ? (
+            <LineChart
+              data={lineChartData}
+              width={320}
+              height={220}
+              chartConfig={chartConfig}
+              bezier
+              onDataPointClick={({ index }) => handleDataPointClick(index)}
+            />
+          ) : (
+            <Text>No sleep data available.</Text>
+          )}
+          <Text style={styles.axisLabel}>Your Last {sleepDurations.length} Naps</Text>
+        </View>
+      </>
+    )}
+    {error && <Text style={styles.errorText}>Error: {error}</Text>}
+  </ScrollView>
   );
 };
 
@@ -109,6 +125,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f0f9ff', 
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 200,
   },
   header: {
     fontSize: 36, 

@@ -117,45 +117,47 @@ const SettingsScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.label}>Set Sleep Time:</Text>
-        <TouchableOpacity style={styles.button} onPress={() => setShowSleepPicker(true)}>
-          <Text style={styles.buttonText}>Set Sleep Time</Text>
+      <View style={styles.times}>
+        <Text style={styles.header}>Set up your Sleep Time and Wake-up Time</Text>
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.button} onPress={() => setShowSleepPicker(true)}>
+            <Text style={styles.buttonText}>Set Sleep Time</Text>
+          </TouchableOpacity>
+          {showSleepPicker && (
+            <DateTimePicker
+              value={sleepTime}
+              mode="time"
+              display="default"
+              onChange={onChangeSleepTime}
+            />
+          )}
+          <Text style={styles.valueText}>Sleep at: {formatTime(sleepTime)}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.button} onPress={() => setShowWakePicker(true)}>
+            <Text style={styles.buttonText}>Set Wake-Up Time</Text>
+          </TouchableOpacity>
+          {showWakePicker && (
+            <DateTimePicker
+              value={wakeTime}
+              mode="time"
+              display="default"
+              onChange={onChangeWakeTime}
+            />
+          )}
+          <Text style={styles.valueText}>Wake up at: {formatTime(wakeTime)}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={onSaveTimes} disabled={!isSaveEnabled || isSaving}>
+          {isSaving ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+              <Text style={styles.buttonText}>Save Changes</Text>
+          )}
         </TouchableOpacity>
-        {showSleepPicker && (
-          <DateTimePicker
-            value={sleepTime}
-            mode="time"
-            display="default"
-            onChange={onChangeSleepTime}
-          />
-        )}
-        <Text style={styles.valueText}>Sleep at: {formatTime(sleepTime)}</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Set Wake-Up Time:</Text>
-        <TouchableOpacity style={styles.button} onPress={() => setShowWakePicker(true)}>
-          <Text style={styles.buttonText}>Set Wake-Up Time</Text>
-        </TouchableOpacity>
-        {showWakePicker && (
-          <DateTimePicker
-            value={wakeTime}
-            mode="time"
-            display="default"
-            onChange={onChangeWakeTime}
-          />
-        )}
-        <Text style={styles.valueText}>Wake up at: {formatTime(wakeTime)}</Text>
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={onSaveTimes} disabled={!isSaveEnabled || isSaving}>
-        {isSaving ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-        ) : (
-            <Text style={styles.buttonText}>Save Changes</Text>
-        )}
-      </TouchableOpacity>
 
       <View style={styles.section}>
         <Text style={styles.label}>Alarm Frequency:</Text>
@@ -192,21 +194,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f7f9fc',  // A lighter, more neutral background color
+    backgroundColor: '#f0f9ff',  // A lighter, more neutral background color
   },
-  section: {
+  times: {
     marginBottom: 20,
-    padding: 15,  // Increased padding for better spacing
+    padding: 20, 
     backgroundColor: '#ffffff',
-    borderRadius: 12,  // More pronounced rounded corners
+    borderRadius: 12,  
     borderWidth: 1,
-    borderColor: '#dfe1e5',  // Softer border color
+    borderColor: '#dfe1e5',  
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.1,  // Softer shadow for a subtle depth effect
+    shadowOpacity: 0.1,  
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  header:{
+    fontSize: 24, 
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: "bold",
+    color: '#34495e', 
+  },
+  section: {
+    marginBottom: 20,
+    padding: 15,  
+    backgroundColor: 'white',
+    borderRadius: 15, 
+    borderWidth: 1,
+    borderColor: '#dfe1e5',  
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,  
     shadowRadius: 10,
     elevation: 6,
   },

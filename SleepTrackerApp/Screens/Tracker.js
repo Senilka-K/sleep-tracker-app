@@ -153,7 +153,7 @@
 // export default SleepTracker;
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { NGROK_STATIC_DOMAIN } from '@env';
 import { getUserId } from '../UserIdStore';
@@ -161,7 +161,6 @@ import { getUserId } from '../UserIdStore';
 const SleepTracker = () => {
   const [isSleeping, setIsSleeping] = useState(false);
   const [sleepStartTime, setSleepStartTime] = useState(null);
-  const [sleepDuration, setSleepDuration] = useState('');
 
   useEffect(() => {
     requestPermissions();
@@ -268,24 +267,70 @@ const SleepTracker = () => {
       const response = await fetch(`${NGROK_STATIC_DOMAIN}/wake/${userId}`, {
         method: 'PUT'
       });
-      if (!response.ok) throw new Error('Failed to record wake time');
       const data = await response.json();
-      setIsSleeping(false);
-      setSleepDuration(`${new Date(data.sleepDuration).getUTCHours()} hours, ${new Date(data.sleepDuration).getUTCMinutes()} minutes`);
+      if (!response.ok) throw new Error(data.message || 'Failed to record wake time');
+      
+      setIsSleeping(false);  
+
     } catch (error) {
       console.error('Error recording wake time:', error.message);
     }
   };
   
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Notifications are dynamically set based on server data.</Text>
-      <TouchableOpacity onPress={toggleSleep} style={{ marginTop: 20, padding: 10, backgroundColor: '#007AFF' }}>
-        <Text style={{ color: 'white' }}>{isSleeping ? 'Wake Up Now' : 'Sleep Now'}</Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>Time to Sleep!</Text>
+      <Text style={styles.subHeader}>Dream Beautifully.</Text>
+      <TouchableOpacity onPress={toggleSleep} style={styles.button}>
+        <Text style={styles.buttonText}>{isSleeping ? 'Wake Up Now' : 'Sleep Now'}</Text>
       </TouchableOpacity>
-      <Text>Sleep Duration: {sleepDuration}</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f9ff',  
+  },
+  header: {
+    fontSize: 48, 
+    marginBottom: 40,
+    textAlign: 'center',
+    fontWeight: "bold",
+    color: '#34495e', 
+  },
+  subHeader: {
+    fontSize: 30,
+    marginBottom: 60,
+    textAlign: 'center',
+    fontWeight: "bold",
+    color: '#34495e', 
+  },
+  button: {
+    backgroundColor: '#3498db',  
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 10,  
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 7,
+    marginBottom: 20,
+    marginTop: 15,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textTransform: 'uppercase', 
+  },
+})
 
 export default SleepTracker;

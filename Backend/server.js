@@ -247,10 +247,10 @@ app.put('/wake/:userId', async (req, res) => {
       sleepDuration: sleepRecord.sleepDuration,
       age: formDetails.age,
       gender: formDetails.gender,
-      stressLevel: 2,
-      bmiCategory: 3,
-      heartRate: 77,
-      bloodPressure: "126/83"
+      stressLevel: 4,
+      bmiCategory: 2,
+      heartRate: 78,
+      bloodPressure: "129/90"
     };
 
     const child = spawn('python3', ['../Model/model.py', JSON.stringify(temp)]);

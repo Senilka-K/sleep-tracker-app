@@ -47,51 +47,61 @@ const Buttons = ( { navigation } ) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9', // Soft light grey background for less strain
+    backgroundColor: '#f0f9ff', 
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
   headerText: {
-    color: '#1a237e', // Indigo text color for emphasis
-    fontSize: 40, // Adjusted for better proportion
-    fontWeight: 'bold',
-    textAlign: "center",
+    fontSize: 40, 
     marginBottom: 20,
+    textAlign: 'center',
+    fontWeight: "bold",
+    color: '#34495e', 
   },
   subHeaderText: {
-    color: '#37474f', // Deep blue-grey for subtle emphasis
-    fontSize: 24, // Adjusted size for hierarchy
-    textAlign: "center",
-    marginBottom: 50, // Increased spacing for airy feel
+    fontSize: 30,
+    marginBottom: 30,
+    textAlign: 'center',
+    fontWeight: "bold",
+    color: '#34495e', 
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginTop: 20, // Reduced to avoid too much spacing
-    marginBottom: 40, // Consistent spacing for visual rhythm
+    marginTop: 20, 
+    marginBottom: 40, 
   },
   button: {
-    backgroundColor: '#5c6bc0', // Soothing deep purple
-    paddingVertical: 15, // Optimized padding for touch
-    paddingHorizontal: 10,
+    backgroundColor: '#3498db', 
+    paddingVertical: 15, 
+    paddingHorizontal: 20,
     alignItems: 'center',
-    borderRadius: 12, // Slightly rounded for a modern look
-    width: '45%', // Maintaining proportion for better aesthetics
-    elevation: 3, // Subtle shadow for 3D effect
+    justifyContent: 'center',
+    borderRadius: 12,
+    marginBottom: 10,
+    width: '45%', 
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3, 
   },
   buttonText: {
-    color: '#ffffff', // White text for contrast
+    color: '#ffffff', 
     textAlign: 'center',
-    fontSize: 22, // Optimized size for readability
-    fontWeight: '500', // Medium font weight for clarity
-    marginVertical: 10, // Vertical margin for better text space
+    fontSize: 22,
+    fontWeight: 'bold', 
+    marginVertical: 10,
   },
   icon: {
-    width: 50, // Adjusted size for balance
-    height: 50, // Match width for proportion
-    marginBottom: 10, // Space between icon and text
+    width: 50, 
+    height: 50,
+    marginBottom: 10,
   },
 });
 

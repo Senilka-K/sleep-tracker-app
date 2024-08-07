@@ -299,23 +299,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 20,
   },
-  button: {
-    backgroundColor: '#3498db', 
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,  // More rounded corners
-    marginBottom: 15,  // More space below the button
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
   actionButton: {
     backgroundColor: "#3498db",
     paddingVertical: 10,

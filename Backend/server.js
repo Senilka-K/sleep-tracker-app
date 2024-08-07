@@ -213,7 +213,7 @@ app.put("/edit-form", async (req, res) => {
       const { userId } = req.body;
       const newSleepRecord = new SleepData({
         userId: userId,
-        sleepTime: new Date() // Record the current time as sleep time
+        sleepTime: new Date() 
       });
   
       await newSleepRecord.save();
@@ -229,9 +229,9 @@ app.put('/wake/:userId', async (req, res) => {
     const { userId } = req.params;
     const sleepRecord = await SleepData.findOne({
       userId: userId,
-      wakeUpTime: { $exists: false },    // Ensures no wakeUpTime is recorded
-      sleepDuration: { $exists: false }, // Ensures no sleepDuration is recorded
-      sleepQuality: { $exists: false }   // Ensures no sleepQuality is recorded
+      wakeUpTime: { $exists: false },    
+      sleepDuration: { $exists: false }, 
+      sleepQuality: { $exists: false }   
     });
     const formDetails = await FormDetails.findOne({ userId: userId }, 'age gender');
 
@@ -239,8 +239,8 @@ app.put('/wake/:userId', async (req, res) => {
       return res.status(404).json({ message: "Sleep record not found or wake-up time already recorded." });
     }
 
-    sleepRecord.wakeUpTime = new Date(); // Record current time as wake-up time
-    sleepRecord.sleepDuration = new Date(sleepRecord.wakeUpTime - sleepRecord.sleepTime); // Calculate duration
+    sleepRecord.wakeUpTime = new Date(); 
+    sleepRecord.sleepDuration = new Date(sleepRecord.wakeUpTime - sleepRecord.sleepTime); 
     await sleepRecord.save();
 
     const temp = {
@@ -269,7 +269,6 @@ app.put('/wake/:userId', async (req, res) => {
       if (code === 0) {
         try {
           const result = JSON.parse(output.trim());
-          // Ensure result.sleepQuality is parsed as an integer
           sleepRecord.sleepQuality = parseInt(result.sleepQuality);
           await sleepRecord.save();
           res.status(200).json({ message: "Success", data: result });
@@ -288,15 +287,15 @@ app.put('/wake/:userId', async (req, res) => {
   }
 });
 
-// GET endpoint to fetch the latest sleep quality and last 7 sleep durations for a specific user
+// Endpoint to GET the latest sleep quality and sleep durations
 app.get('/sleep-quality/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
     const sleepRecords = await SleepData.find({ userId: userId })
-      .sort({ wakeUpTime: -1 }) // Sort by wakeUpTime in descending order
-      .limit(7) // Limit to the last 7 records
-      .select('sleepDuration wakeUpTime sleepTime sleepQuality') // Include sleepQuality
+      .sort({ wakeUpTime: -1 })
+      .limit(7) 
+      .select('sleepDuration wakeUpTime sleepTime sleepQuality') 
       .exec();
 
     if (sleepRecords.length === 0) {

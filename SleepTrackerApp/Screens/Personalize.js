@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f0f9ff',  // A lighter, more neutral background color
+    backgroundColor: '#f0f9ff',  
   },
   times: {
     marginBottom: 20,
@@ -236,24 +236,24 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   label: {
-    fontSize: 20,  // Slightly larger font for better readability
-    fontWeight: '600',  // Medium-bold weight
-    marginBottom: 12,  // Increased space between label and content
-    color: '#2c3e50',  // Darker color for better readability
+    fontSize: 20,  
+    fontWeight: '600',
+    marginBottom: 12, 
+    color: '#2c3e50', 
   },
   valueText: {
-    fontSize: 18,  // Larger font size for better visibility
-    color: '#34495e',  // A softer, more pleasant color
-    marginBottom: 10,  // More space below the text for clarity
+    fontSize: 18,  
+    color: '#34495e',  
+    marginBottom: 10,  
   },
   button: {
-    backgroundColor: '#3498db',  // A fresh, vibrant blue
+    backgroundColor: '#3498db',  
     paddingVertical: 14,
     paddingHorizontal: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 8,  // More rounded corners
-    marginBottom: 15,  // More space below the button
+    borderRadius: 8, 
+    marginBottom: 15,  
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -265,13 +265,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 20,  // Increased font size for button text
+    fontSize: 20,  
     fontWeight: 'bold',
   },
   picker: {
     width: '100%',
     backgroundColor: '#fff',
-    borderRadius: 8,  // Rounded corners for the picker as well
+    borderRadius: 8, 
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

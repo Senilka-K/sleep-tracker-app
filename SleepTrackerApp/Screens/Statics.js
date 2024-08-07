@@ -66,8 +66,8 @@ const SleepStatisticsScreen = () => {
     backgroundGradientTo: "#f8f8f8",
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     strokeWidth: 2,
-    decimalPlaces: 1, // optional, defaults to 2dp
-    useShadowColorFromDataset: false // optional
+    decimalPlaces: 1,
+    useShadowColorFromDataset: false 
   };
 
   const lineChartData = {
@@ -108,53 +108,53 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f0f9ff', // A soothing light blue that's easy on the eyes at night
+    backgroundColor: '#f0f9ff', 
   },
   header: {
-    fontSize: 36, // Slightly smaller for subtlety
+    fontSize: 36, 
     marginBottom: 20,
     textAlign: 'center',
     fontWeight: "bold",
-    color: '#34495e', // A dark blue color for elegance
+    color: '#34495e',
   },
   dateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Use space-between to align button to the right
+    justifyContent: 'space-between', 
     marginTop: 20,
     marginBottom: 20,
-    paddingHorizontal: 10, // Add horizontal padding
+    paddingHorizontal: 10, 
   },
   dateDisplay: {
     fontSize: 24,
-    color: '#2c3e50', // A deeper shade of blue for contrast
-    flex: 1, // Allow text to take up remaining space
+    color: '#2c3e50', 
+    flex: 1, 
   },
   subtitle: {
-    fontSize: 26, // Slightly reduced size for a balanced look
+    fontSize: 26,
     color: '#2c3e50',
     marginTop: 10,
     marginBottom: 10,
     textAlign: "center",
-    fontWeight: "600", // Semi-bold for importance without overpowering
+    fontWeight: "600",
   },
   sleepQuality: {
     fontSize: 20,
-    color: '#16a085', // A teal color to highlight the sleep quality
+    color: '#16a085', 
     marginBottom: 30,
     textAlign: "center",
   },
   chartContainer: {
     alignItems: 'center',
-    padding: 20, // Add padding to give space around the chart
-    backgroundColor: '#ffffff', // White background to make the chart stand out
-    borderRadius: 10, // Rounded corners for the chart container
+    padding: 20, 
+    backgroundColor: '#ffffff',
+    borderRadius: 10, 
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1, // Lighter shadow for subtlety
+    shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
   },

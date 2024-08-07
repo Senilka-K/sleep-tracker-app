@@ -148,34 +148,35 @@ import {
       flexGrow: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#f5f5f5", // Light grey background for better contrast
+      backgroundColor: "#f0f9ff", 
     },
     text: {
-      fontSize: 30,
-      fontWeight: "bold",
-      paddingTop: 20,
+      fontSize: 36, 
       marginBottom: 30,
-      color: "#333", // Darker text color for visibility
+      textAlign: 'center',
+      fontWeight: "bold",
+      color: '#34495e', 
     },
     form: {
       backgroundColor: "white",
       padding: 20,
       width: screenWidth - 50,
-      borderRadius: 10,
-      shadowColor: "rgba(0, 0, 0, 0.25)", // Slightly transparent shadow
+      borderRadius: 15,
+      borderWidth: 1,
+      borderColor: '#dfe1e5',
+      shadowColor: "#000",
       shadowOffset: {
         width: 0,
-        height: 2,
+        height: 4,
       },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
+      elevation: 6,
     },
     label: {
-      fontSize: 20,
-      marginBottom: 5,
+      fontSize: 18,
+      marginBottom: 8,
       fontWeight: "bold",
-      color: "#555", // Dark grey label color
     },
     input: {
       height: 40,
@@ -185,7 +186,7 @@ import {
       padding: 10,
       borderRadius: 5,
       fontSize: 18,
-      color: "#333", // Dark text color for input
+      color: "#333", 
     },
     errorText: {
       color: "red",
@@ -197,16 +198,27 @@ import {
       marginTop: 20,
     },
     actionButton: {
-      backgroundColor: "#4682B4", // Blue background color for action button
-      padding: 10,
+      backgroundColor: "#3498db",
+      paddingVertical: 10,
+      paddingHorizontal: 10,
       width: screenWidth - 250,
-      alignItems: "center",
-      borderRadius: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 8,
+      marginBottom: 15,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 4,
     },
     actionButtonText: {
       fontSize: 24,
       color: "#fff",
-      fontWeight: "bold", // Bold action button text
+      fontWeight: 'bold',
     },
   });
 

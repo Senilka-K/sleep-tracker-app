@@ -149,7 +149,11 @@ const SettingsScreen = () => {
           <Text style={styles.valueText}>Wake up at: {formatTime(wakeTime)}</Text>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={onSaveTimes} disabled={!isSaveEnabled || isSaving}>
+        <TouchableOpacity 
+          style={[styles.button, !isSaveEnabled || isSaving ? styles.buttonDisabled : {}]}
+          onPress={onSaveTimes} 
+          disabled={!isSaveEnabled || isSaving}
+        >
           {isSaving ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
@@ -262,6 +266,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
+  },
+  buttonDisabled: {
+    backgroundColor: '#a9a9a9',
   },
   buttonText: {
     color: '#fff',

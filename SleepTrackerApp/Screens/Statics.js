@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { Dimensions, ScrollView, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { NGROK_STATIC_DOMAIN } from '@env';
 import { getUserId } from '../UserIdStore';
+
+const screenWidth = Dimensions.get("window").width;
 
 const SleepStatisticsScreen = () => {
   const [date, setDate] = useState(new Date());
@@ -11,6 +13,7 @@ const SleepStatisticsScreen = () => {
   const [sleepDurations, setSleepDurations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeIndex, setActiveIndex] = useState(null); 
 
   useEffect(() => {
     const initializeData = async () => {
@@ -63,6 +66,7 @@ const SleepStatisticsScreen = () => {
     if (sleepData) {
       setSleepQuality(sleepData.quality);
       setDate(new Date(sleepData.date));
+      setActiveIndex(dataIndex);
     }
   };
 
@@ -84,6 +88,7 @@ const SleepStatisticsScreen = () => {
     }]
   };
 
+
   return (
     <ScrollView style={styles.container}>
     <Text style={styles.header}>Sleep Journal</Text>
@@ -100,13 +105,28 @@ const SleepStatisticsScreen = () => {
         <Text style={styles.sleepQuality}>{sleepQuality}</Text>
         <View style={styles.chartContainer}>
           {sleepDurations.length > 0 ? (
-            <LineChart
+              <LineChart
               data={lineChartData}
-              width={320}
+              width={screenWidth - 40}
               height={220}
               chartConfig={chartConfig}
               bezier
+              fromZero
               onDataPointClick={({ index }) => handleDataPointClick(index)}
+              renderDotContent={({ x, y, index }) => (
+                <View
+                  key={index}
+                  style={{
+                    position: 'absolute',
+                    top: y - 5,
+                    left: x - 5,
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: index === activeIndex ? 'green' : 'red'
+                  }}
+                />
+              )}
             />
           ) : (
             <Text>No sleep data available.</Text>

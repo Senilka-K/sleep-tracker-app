@@ -1,20 +1,57 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import { NGROK_STATIC_DOMAIN } from '@env';
+import { getUserId } from '../UserIdStore';
 
 const SleepTimeSelector = ( { navigation } ) => {
   const [sleepTime, setSleepTime] = useState(new Date());
-  const [showSleepPicker] = useState(true); // Always show picker
+  const [showSleepPicker] = useState(true);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const fetchedUserId = await getUserId();
+      setUserId(fetchedUserId);
+    };
+
+    fetchUserId();
+  }, []);
 
   const onChangeSleep = (event, selectedDate) => {
     const currentDate = selectedDate || sleepTime;
     setSleepTime(currentDate);
   };
 
-  const saveSleepTime = () => {
-    console.log('Sleep Time saved:', sleepTime.toLocaleTimeString());
-    navigation.navigate('WakeTimeSelector'); 
+  const formatTime = (date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }).format(date);
+  };
+
+  const saveSleepTime = async () => {
+    if (!userId) {
+      Alert.alert('Error', 'User not authenticated');
+      return;
+    }
+    try {
+      const response = await fetch(`${NGROK_STATIC_DOMAIN}/update-sleep-time`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userId, sleepTime: sleepTime.toISOString() })
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        Alert.alert('Success', 'Sleep time saved successfully');
+        navigation.navigate('WakeTimeSelector');
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', `Failed to save sleep time: ${error.message}`);
+    }
   };
 
   return (
@@ -33,7 +70,7 @@ const SleepTimeSelector = ( { navigation } ) => {
       <TouchableOpacity style={styles.button} onPress={saveSleepTime}>
         <Text style={styles.buttonText}>Save Your Sleep Time</Text>
       </TouchableOpacity>
-      <Text style={styles.timeText}>Sleep at: {sleepTime.toLocaleTimeString()}</Text>
+      <Text style={styles.timeText}>Sleep at: {formatTime(sleepTime)}</Text>
     </View>
   );
 };
@@ -44,14 +81,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#f0f9ff',
   },
   pickerContainer: {
     width: '80%',
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'grey',
+    backgroundColor: 'black',
     borderRadius: 10,
     padding: 20,
     marginBottom: 80,
@@ -66,29 +103,33 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   label: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    textAlign: "center",
-    color: '#333',
-    marginBottom: 40,
+    fontSize: 40, 
+    marginBottom: 30,
+    textAlign: 'center',
+    fontWeight: "bold",
+    color: '#34495e', 
   },
   button: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
+    backgroundColor: "#3498db",
+    paddingVertical: 15,
     paddingHorizontal: 20,
-    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginBottom: 15,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
-    color: '#fff',
     fontSize: 20,
+    color: "#fff",
+    fontWeight: 'bold',
   },
   timeText: {
     fontSize: 20,

@@ -1,73 +1,249 @@
-import React, { useState } from 'react';
-import { Dimensions, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TextInput,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+  Platform,
+  ScrollView,
+  Alert,
+} from "react-native";
+import { useState, useEffect } from "react";
+import { NGROK_STATIC_DOMAIN } from '@env';
+import { getUserId } from "../UserIdStore";
+import { useIsFocused } from "@react-navigation/native";
+import ApplicationForm from "./Form";
 
 const screenWidth = Dimensions.get("window").width;
 
-const ApplicationFormEditable = () => {
-  const [formData, setFormData] = useState({
-    Name: "John Doe",
-    Age: "40",
-    Gender: "Male",
-    Occupation: "Doctor",
-  });
+const ApplicationFormEditable = ({ navigation }) => {
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [userId, setUserId] = useState(null);
+  const [isEditable, setIsEditable] = useState(true);
+  const [errors, setErrors] = useState({});
+  const [buttonText, setButtonText] = useState("Edit");
 
-  const [editMode, setEditMode] = useState(false);
+  const isFocused = useIsFocused();
 
-  const handleInputChange = (field, value) => {
-    setFormData(prevState => ({ ...prevState, [field]: value }));
+  const handleSubmit = async () => {
+    if (!userId) {
+      Alert.alert("Error", "User ID is not available");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`${NGROK_STATIC_DOMAIN}/edit-form`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          name,
+          age,
+          gender,
+          occupation
+        }),
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        Alert.alert("Success", "Form data updated successfully");
+        setIsEditable(false);
+        setButtonText("Edit");
+      } else {
+        throw new Error(result.message || "Failed to update data");
+      }
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
   };
 
-  const handleUpdate = () => {
-    console.log("Updated Data:", formData);
-    Alert.alert("Form Updated", "Your form has been successfully updated.");
-    setEditMode(false);
+  const handleEditOrSubmit = () => {
+    if (isEditable) {
+      handleSubmit();
+    } else {
+      setIsEditable(true);
+      setButtonText("Submit");
+    }
   };
-
+  
   const handleDelete = () => {
-    console.log("Form Data Deleted");
-    Alert.alert("Form Deleted", "Your form has been successfully deleted.");
+    Alert.alert(
+      "Delete",
+      "Are you sure you want to delete this information?",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes",
+          onPress: () => {
+            deleteFormData();
+            console.log("Information Deleted");
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
-  const toggleEditMode = () => {
-    setEditMode(!editMode);
+  const deleteFormData = async () => {
+    const userId = await getUserId();
+    if (userId) {
+      try {
+        const response = await fetch(
+          `${NGROK_STATIC_DOMAIN}/delete-form`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId }),
+          }
+        );
+
+        const responseData = await response.json();
+        if (response.ok) {
+          setName("");
+          setAge("");
+          setGender("");
+          setOccupation("");
+          setIsEditable(true);
+          navigation.navigate(ApplicationForm);
+          console.log("Form data deleted successfully");
+          Alert.alert("Success", "Form data deleted successfully");
+        } else {
+          throw new Error(responseData.message);
+        }
+      } catch (error) {
+        console.error("Error deleting form data:", error);
+        Alert.alert("Error", "Failed to delete form data");
+      }
+    } else {
+      Alert.alert("Error", "User ID is not available");
+    }
   };
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const userId = await getUserId();
+      if (userId) {
+        setUserId(userId);
+        try {
+          const response = await fetch(
+            `${NGROK_STATIC_DOMAIN}/formData`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ userId }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (response.status === 200) {
+            console.log("success", data);
+            setName(data.name);
+            setAge(data.age);
+            setGender(data.gender);
+            setOccupation(data.occupation);
+            setIsEditable(false);
+            console.log("done");
+          } else {
+            setName("");
+            setAge("");
+            setGender("");
+            setOccupation("");
+            setIsEditable(true);
+          }
+        } catch (error) {
+          console.error("Error!", error);
+        }
+      }
+    };
+
+    fetchUserId();
+  }, [isFocused]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.container}>
-        <Text style={styles.text}>Application Form</Text>
-        <View style={styles.form}>
-          {Object.entries(formData).map(([key, value]) => (
-            <View key={key} style={styles.fieldContainer}>
-              <Text style={styles.label}>{key.replace(/([A-Z])/g, ' $1').trim()}</Text>
-              {editMode ? (
-                <TextInput
-                  style={styles.input}
-                  onChangeText={(text) => handleInputChange(key, text)}
-                  value={value}
-                />
-              ) : (
-                <Text style={styles.value}>{value}</Text>
-              )}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
+          <Text style={styles.text}>Application Form</Text>
+          <View style={styles.form}>
+            <Text style={styles.label}>Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your Name"
+              value={name}
+              onChangeText={setName}
+              editable={isEditable}
+            />
+            {errors.name ? (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            ) : null}
+            <Text style={styles.label}>Age</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your Age"
+              value={age}
+              onChangeText={setAge}
+              editable={isEditable}
+            />
+            {errors.age ? (
+              <Text style={styles.errorText}>{errors.age}</Text>
+            ) : null}
+            <Text style={styles.label}>Gender</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your Gender"
+              value={gender}
+              onChangeText={setGender}
+              editable={isEditable}
+            />
+            {errors.gender ? (
+              <Text style={styles.errorText}>{errors.gender}</Text>
+            ) : null}
+            <Text style={styles.label}>Occupation</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your Occupation"
+              value={occupation}
+              onChangeText={setOccupation}
+              editable={isEditable}
+            />
+            {errors.occupation ? (
+              <Text style={styles.errorText}>{errors.occupation}</Text>
+            ) : null}
+            <View style={styles.actionButtonGroup}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={handleEditOrSubmit}
+              >
+                <Text style={styles.actionButtonText}>{buttonText}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={handleDelete}
+              >
+                <Text style={styles.actionButtonText}>Delete</Text>
+              </TouchableOpacity>
             </View>
-          ))}
+          </View>
         </View>
-        <View style={styles.buttonContainer}>
-          {editMode ? (
-            <TouchableOpacity style={styles.actionButton} onPress={handleUpdate}>
-              <Text style={styles.buttonText}>Save Changes</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.actionButton} onPress={toggleEditMode}>
-              <Text style={styles.buttonText}>Edit Form</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Text style={styles.buttonText}>Delete Form</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -76,75 +252,75 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 20,
-    backgroundColor: "#f0f9ff", // Light grey background for the overall screen
+    backgroundColor: "#f0f9ff"
   },
   text: {
-    fontSize: 24,
+    fontSize: 36, 
+    marginBottom: 30,
+    textAlign: 'center',
     fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333", // Dark grey for better contrast
+    color: '#34495e', 
   },
   form: {
     backgroundColor: "white",
     padding: 20,
     width: screenWidth - 50,
-    borderRadius: 15, // Increased border radius
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#dfe1e5',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
     elevation: 6,
   },
-  fieldContainer: {
-    marginBottom: 20, // Increased margin for better spacing
-  },
   label: {
-    fontSize: 18, // Slightly larger font size
-    fontWeight: "600", // Less bold than 'bold'
-    marginBottom: 10,
-    color: "#424242", // Soft black for labels
+    fontSize: 18,
+    marginBottom: 8,
+    fontWeight: "bold",
   },
   input: {
-    height: 45, // Taller input fields
-    borderColor: '#BDBDBD', // Softer border color
-    borderWidth: 1.5,
-    marginBottom: 12,
-    padding: 12,
-    borderRadius: 8, // Rounded corners for input fields
-    fontSize: 16, // Slightly larger font size for input
+    height: 40,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    marginBottom: 15,
+    padding: 10,
+    borderRadius: 5,
   },
-  value: {
-    fontSize: 16,
-    padding: 12,
-    backgroundColor: "#E0E0E0", // Lighter background for non-editable fields
-    borderRadius: 8,
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 25, // More top margin
-    width: '70%', // More breathing room on the sides
+  actionButtonGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
   },
   actionButton: {
-    backgroundColor: "#2196F3", // A fresher blue shade
-    padding: 12,
+    backgroundColor: "#3498db",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    width: screenWidth - 300,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 8,
-    elevation: 3, // Slight elevation for 3D effect
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  deleteButton: {
-    backgroundColor: "#F44336", // A vibrant red
-    padding: 12,
-    borderRadius: 8,
-    elevation: 3,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '500', // Less bold for a modern look
-    fontSize: 16, // Larger font for buttons
+  actionButtonText: {
+    fontSize: 18,
+    color: "#fff",
+    fontWeight: 'bold',
   },
 });
 

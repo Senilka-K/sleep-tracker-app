@@ -32,7 +32,7 @@ npm install -g expo-cli
    cd sleep-tracker-app
    ```
 
-   Replace <repository-url> with the actual URL of the repository.
+   Replace `<repository-url>` with the actual URL of the repository.
 
 2. **Backend Setup**
 
@@ -45,8 +45,17 @@ npm install -g expo-cli
    npm install
    node server.js
    ```
+3. **Ngrok Setup**
 
-3. **Mobile App Setup**
+   - Create an ngrok account using [ngrok website](https://ngrok.com)
+   - Copy the static domain of your account
+   - Run the following command in a terminal to initiate ngrok
+      ```
+      ngrok http -hostname=your-custom-subdomain.ngrok.io <PORT>
+      ```
+      Replace `<PORT>` with the actual port number your server is running on.
+
+4. **Mobile App Setup**
 
    Prepare and run the mobile application:
 

@@ -47,7 +47,7 @@ npm install -g expo-cli
    ```
 3. **Ngrok Setup**
 
-   - Create an ngrok account using ngrok (website|https://ngrok.com)
+   - Create an ngrok account using [ngrok website](https://ngrok.com)
    - Copy the static domain of your account
    - Run the following command in a terminal to initiate ngrok
       ```
